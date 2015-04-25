@@ -400,6 +400,9 @@ var swungPunch = false;
 var rightKick = false;
 var swungKick = false;
 
+
+var jumpDropNow = false;
+
 function punchTimer(){
 
 swungPunch = false;
@@ -415,6 +418,15 @@ swungKick = false;
   console.log("hit kick Timer once");
 
 }
+
+
+
+function jumpDropTimer(){
+    jumpDropNow = false;
+    fighter.y = 920; 
+    fighter.py = 890;
+     console.log("drop Timer once");
+}
         
 //Create The player
 var fighter = {
@@ -425,9 +437,9 @@ var fighter = {
     rightLeg: Sprite("redTile"),
     leftLeg: Sprite("redTile"),
     x: 565,
-    y: 680,
+    y: 920,
     px: 635,
-    py: 680,
+    py: 920,
     pwidth: 64,
     pheight: 160,
     width: 64,
@@ -458,7 +470,7 @@ var fighter = {
 
 
       if(rightKick == true){
-            console.log(this.rightLeg);
+            //console.log(this.rightLeg);
            this.rightLeg.draw(canvas, this.x + 50, this.y + 100);
 /*            console.log("punch dynamics");*/
         }else{
@@ -531,7 +543,7 @@ var punchingBag = {
     rightLeg: Sprite("redTile"),
     leftLeg: Sprite("redTile"),
     x: 720,
-    y: 680,
+    y: 920,
     width: 64,
     height: 160,
     life: 100,
@@ -618,182 +630,7 @@ function punchcollides(a, b) {
 }
 
 
-function collisionDetection() {
- 
-    /*
-     * private function initialize()
-     *
-     * Initializes the object
-     *
-     */
-    this.initialize = function() {}
- 
-    /*
-     * public function hitTest()
-     *
-     * Checks if two objects collide. First with box-model detection
-     * and then on a per-pixel detection.
-     *
-     * Both source and target objects are expected to look like this:
-     *
-     * {
-     *    x: (Number) current x position,
-     *    y: (Number) current y position,
-     *    width: (Number) object height,
-     *    height: (Number) object width,
-     *    pixelmap: (Object) pixel map object generated from buildPixelMap()
-     * }
-     *
-     * @param source (Object) The source object
-     * @param target (Object) The target object
-     *
-     * @return boolean, true on collision
-     *
-     */
-    this.hitTest = function( source, target ) {
-        var hit = false;
-        var start = new Date().getTime();
- 
-        if( this.boxHitTest( source, target ) ) {
-            if( this.pixelHitTest( source, target ) ) {
-                hit = true;
-            }
-        }
- 
-        var end = new Date().getTime();
- 
-        if( hit == true ){
-            //console.log( 'detection took: ' + (end - start) + 'ms' );
-        }
- 
-        return hit;
-    }
- 
-    /*
-     * private function boxHitTest()
-     *
-     * Checks if two objects collide with box-model detection.
-     *
-     * Both source and target objects are expected to look like this:
-     *
-     * {
-     *    x: (Number) current x position,
-     *    y: (Number) current y position,
-     *    width: (Number) object height,
-     *    height: (Number) object width
-     * }
-     *
-     * @param source (Object) The source object
-     * @param target (Object) The target object
-     *
-     * @return boolean, true on collision
-     *
-     */
-    this.boxHitTest = function( source, target ) {
-        return !( 
-            ( ( source.y + source.height ) < ( target.y ) ) ||
-            ( source.y > ( target.y + target.height ) ) ||
-            ( ( source.x + source.width ) < target.x ) ||
-            ( source.x > ( target.x + target.width ) ) 
-        );
-    }
- 
-    /*
-     * private function pixelHitTest()
-     *
-     * Checks if two objects collide on a per-pixel detection.
-     *
-     * Both source and target objects are expected to look like this:
-     *
-     * {
-     *    x: (Number) current x position,
-     *    y: (Number) current y position,
-     *    width: (Number) object height,
-     *    height: (Number) object width,
-     *    height: (Number) object width,
-     *    pixelmap: (Object) pixel map object generated from buildPixelMap()
-     * }
-     *
-     * @param source (Object) The source object
-     * @param target (Object) The target object
-     *
-     * @return boolean, true on collision
-     *
-     */
-    this.pixelHitTest = function( source, target ) {
- 
-            var top = parseInt( Math.max( source.y, target.y ) );
-            var bottom = parseInt( Math.min(source.y+source.height, target.y+target.height) );
-            var left = parseInt( Math.max(source.x, target.x) );
-            var right = parseInt( Math.min(source.x+source.width, target.x+target.width) );
- 
-            for (var y = top; y < bottom; y++)
-            {
-                for (var x = left; x < right; x++)
-                {
-                    var pixel1 = source.pixelMap.data[ (x - source.x) +"_"+ (y - source.y) ];
-                    var pixel2 = target.pixelMap.data[ (x - target.x) +"_"+ (y - target.y) ];
- 
-                    if( !pixel1 || !pixel2 ) {
-                        continue;
-                    };
-                    
-                    if (pixel1.pixelData[3] == 255 && pixel2.pixelData[3] == 255)
-                    {
-                        return true;
-                    }
-                }
-            }
- 
-            return false;
-    }
- 
-    /*
-     * public function buildPixelMap()
-     *
-     * Creates a pixel map on a canvas image. Everything
-     * with a opacity above 0 is treated as a collision point.
-     * Lower resolution (higher number) will generate a faster
-     * but less accurate map.
-     *
-     *
-     * @param source (Object) The canvas object
-     * @param resolution (int)(DEPRECATED!) The resolution of the map
-     *
-     * @return object, a pixelMap object
-     *
-     */
-    this.buildPixelMap = function( source ) {
-        var resolution = 1;
-        var ctx = source.getContext("2d");
-        var pixelMap = [];
- 
-        for( var y = 0; y < source.height; y++) {
-            for( var x = 0; x < source.width; x++ ) {
-                var dataRowColOffset = y+"_"+x;//((y * source.width) + x);
-                var pixel = ctx.getImageData(x,y,resolution,resolution);
-                var pixelData = pixel.data;
- 
-                pixelMap[dataRowColOffset] = { x:x, y:y, pixelData: pixelData };
- 
-            }
-        }
-        return {
-            data: pixelMap,
-            resolution: resolution
-        };
-    }
- 
-    // Initialize the collider
-    this.initialize();
- 
-    // Return our outward facing interface.
-    return {
-        hitTest: this.hitTest.bind( this ),
-        buildPixelMap: this.buildPixelMap.bind( this )
-    };
-};
-var myNewCollission = new collisionDetection();
+
 function handleCollisions() {
     playerBullets.forEach(function(bullet) {
         enemies.forEach(function(enemy) {
@@ -826,7 +663,7 @@ function handleCollisions() {
 
 function handleFightCollisions() {
      if (punchcollides(fighter, punchingBag)) {
-
+                punchingBag.lifeChange(-5);
                 console.log("Collliiiiiiide");
                
             }
@@ -1063,9 +900,24 @@ function update() { //Updates location and reaction of objects to the canvas
             }
         }
 
-        if (keydown.up) {
+        if (keydown.up && jumpDropNow == false) {
+             
             if (fighter.velY > -fighter.speed) {
-                fighter.velY--;
+                if(fighter.y >= 800){
+
+                    fighter.y = 772;
+                    fighter.py = 742;
+                    jumpDropNow = true;
+                     window.setTimeout("jumpDropTimer()", 1000);
+                    //wait 200 milliseconds and drop back down
+
+                //fighter.velY--;
+                console.log(fighter.velY--);
+
+                }
+               
+
+
             }
 
            
@@ -1073,7 +925,7 @@ function update() { //Updates location and reaction of objects to the canvas
 
         if (keydown.down) {
             if (fighter.velY < fighter.speed) {
-                fighter.velY++;
+                //fighter.velY++;
             }
 
         }
@@ -1096,6 +948,7 @@ function update() { //Updates location and reaction of objects to the canvas
             rightPunch = true;
             fighter.px =  fighter.px + 30;
             console.log("punched once");
+            fighter.punch();
             window.setTimeout("punchTimer()", 200);
             handleFightCollisions();
         }
@@ -1103,7 +956,7 @@ function update() { //Updates location and reaction of objects to the canvas
             rightPunch = false;
         }
 
-        if(keydown.z == true && swungPunch == false){
+        if(keydown.z == true && swungKick == false){
             swungKick = true;
             rightKick = true;
             //fighter.px =  fighter.px + 30;
@@ -1237,6 +1090,28 @@ function draw() { //Draws objects to the canvas
         parallax.Draw(); //draw background
         fighter.draw();
         punchingBag.draw();
+
+
+        //Life Bar top is pink static background *FIGHTER HEALTH BAR*
+        canvas.strokeRect(20, 20, 100 * 2, 10);
+        canvas.fillStyle = "#8B8989";
+        canvas.fillRect(20, 20, 100 * 2, 10);
+
+        //Second bar is red dynamic one
+        canvas.strokeRect(20, 20, 100 * 2, 10);
+        canvas.fillStyle = "#F00";
+        canvas.fillRect(20, 20, fighter.life * 2, 10);
+
+
+         //Life Bar top is pink static background *Punchingbag HEALTH BAR*
+        canvas.strokeRect(CANVAS_WIDTH - 400, 20, 100 * 2, 20);
+        canvas.fillStyle = "#8B8989";
+        canvas.fillRect(CANVAS_WIDTH - 400, 20, 100 * 2, 20);
+
+        //Second bar is red dynamic one
+        canvas.strokeRect(CANVAS_WIDTH - 400, 20, 100 * 2, 20);
+        canvas.fillStyle = "#F00";
+        canvas.fillRect(CANVAS_WIDTH - 400, 20, punchingBag.life * 2, 20);
 
 
     }
