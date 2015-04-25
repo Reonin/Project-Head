@@ -77,9 +77,10 @@ var states = {
     splash: 0,
     title: 1,
     Game: 2,
-    End: 3
+    End: 3,
+    Fight:4
 };
-var currentState = states.title;
+var currentState = states.Fight;
 
 //Game Loop
 //var FPS = 60;
@@ -114,11 +115,11 @@ function getMousePos(canvas, evt) {
       var canvasid = document.getElementById('GameCanvasScreen');
       var context = canvas;
 
-      canvasid.addEventListener('mousemove', function(evt) {
-         mousePos = getMousePos(canvasid, evt);
-        var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-        writeMessage(canvas, message);
-      }, false);
+      // canvasid.addEventListener('mousemove', function(evt) {
+      //    mousePos = getMousePos(canvasid, evt);
+      //   var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+      //   writeMessage(canvas, message);
+      // }, false);
 
 
 
@@ -141,7 +142,8 @@ var paused = false;
 //Keyboard Map
 function setUpKeys() {
     window.keydown = {};
-
+    window.keypress = {};
+    window.keyup = {};
     function keyName(event) {
         return jQuery.hotkeys.specialKeys[event.which] ||
             String.fromCharCode(event.which).toLowerCase();
@@ -153,6 +155,11 @@ function setUpKeys() {
 
     $(document).bind("keyup", function(event) {
         keydown[keyName(event)] = false;
+       // keyup[keyName(event)] = true;
+    });
+
+     $(document).bind("keypress", function(event) {
+        keypress[keyName(event)] = true;
     });
 };
 setUpKeys();
@@ -382,6 +389,100 @@ function Enemy(I) {
 
     return I;
 };
+
+
+//The Fighter
+var rightPunch = false;
+
+var swungPunch = false;
+
+function punchTimer(){
+
+swungPunch = false;
+  console.log("hit punch Timer once");
+
+}
+        
+//Create The player
+var fighter = {
+    // color: "#00A",
+    sprite: Sprite("bodyTile"),
+    rightArm: Sprite("greenTile"),
+    leftArm: Sprite("greenTile"),
+    rightLeg: Sprite("redTile"),
+    leftLeg: Sprite("redTile"),
+    x: 220,
+    y: 680,
+    width: 64,
+    height: 160,
+    life: 100,
+    velX: 0,
+    velY: 0,
+    speed: 4,
+    friction: 0.85,
+    draw: function() {
+        //canvas.fillStyle = this.color;
+        // canvas.fillRect(this.x, this.y, this.width, this.height);
+        this.sprite.draw(canvas, this.x, this.y);
+
+        if(rightPunch == true){
+            this.rightArm.draw(canvas, this.x + 70, this.y);
+        }else{
+            this.rightArm.draw(canvas, this.x + 50, this.y);
+        }
+        
+
+        this.leftArm.draw(canvas, this.x - 50, this.y);
+        this.rightLeg.draw(canvas, this.x + 50, this.y + 100);
+        this.leftLeg.draw(canvas, this.x - 50, this.y + 100);
+    },
+    punch: function() {
+       // var bulletPosition = this.midpoint();
+
+        shoot_sound.play();
+
+        
+    },
+    launch: function(){
+        var missilePostition = this.midpoint();
+        console.log(Missle.width);
+        playerMissiles.push(Missle({
+            speed: 2,
+            x: missilePostition.x - 500,
+            y: missilePostition.y
+        }))
+    },
+    midpoint: function() {
+        return {
+            x: this.x + this.width / 2,
+            y: this.y + this.height / 2
+        };
+    },
+    explode: function() {
+        this.active = false;
+        explosion_sound.play();
+        GameLoopMusic_sound.fadeOut(0, 2000);
+        currentState = states.End;
+        // An explosion sound and then end the game
+    },
+    lifeChange: function(change) {
+
+
+        this.life = this.life + change; //Adds or subtracts health based on the value added in the function
+
+        if (this.life <= 0) {
+            this.explode();
+        }
+
+        return this.life;
+
+
+    }
+};
+
+
+
+
 
 //Collision Detection
 function collides(a, b) {
@@ -803,6 +904,58 @@ function update() { //Updates location and reaction of objects to the canvas
     }
 
 
+
+      if (currentState === states.Fight) {
+
+        //Player Movement Controls
+        if (keydown.left) {
+           if (fighter.velX > -fighter.speed) {
+                fighter.velX--;
+            }
+        }
+
+        if (keydown.right) {
+           if (fighter.velX < fighter.speed) {
+                fighter.velX++;
+            }
+        }
+
+        if (keydown.up) {
+            if (fighter.velY > -fighter.speed) {
+                fighter.velY--;
+            }
+
+           
+        }
+
+        if (keydown.down) {
+            if (fighter.velY < fighter.speed) {
+                fighter.velY++;
+            }
+
+        }
+
+        fighter.velX *= fighter.friction;
+        fighter.x += fighter.velX;
+        fighter.velY *= fighter.friction;
+        fighter.y += fighter.velY;
+
+        fighter.x = fighter.x.clamp(0, CANVAS_WIDTH - fighter.width); //prevents character from going past canvas
+
+    
+        fighter.y = fighter.y.clamp(0, CANVAS_HEIGHT - fighter.height); //prevents character from going past canvas
+
+        if(keydown.space == true && swungPunch == false){
+            rightPunch = true;
+            swungPunch = true;
+            window.setTimeout("punchTimer()", 3000);
+            console.log("punched once");
+        }
+        if(keydown.space == false){
+            rightPunch = false;
+        }
+    }
+
 }
 
 function draw() { //Draws objects to the canvas
@@ -816,7 +969,7 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#000"; // Set color to black
         canvas.font = '25pt Calibri';
-        var SPLASH_SCREEN_TEXT = "Team Splash Screen";
+        var SPLASH_SCREEN_TEXT = "Ronin Rampant Games";
         splashTextX = canvas.measureText(SPLASH_SCREEN_TEXT).width;
         canvas.fillText(SPLASH_SCREEN_TEXT, (CANVAS_WIDTH / 2) - (splashTextX / 2), splashTextY);
 
@@ -827,7 +980,7 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#000"; // Set color to black
         canvas.font = 'bold 40pt Calibri';
-        var GAME_NAME_TEXT = "GAME NAME";
+        var GAME_NAME_TEXT = "Project Head";
         gameTextx = canvas.measureText(GAME_NAME_TEXT).width; //Centers the text based on length
         canvas.fillText(GAME_NAME_TEXT, (CANVAS_WIDTH / 2) - (gameTextx / 2) - 3, CANVAS_HEIGHT / 3);
         //The next two create a special text effect
@@ -911,6 +1064,15 @@ function draw() { //Draws objects to the canvas
         canvas.font = '20pt Calibri';
         canvas.fillText("Second Secondton", (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY);
 
+
+
+    }
+
+
+    if (currentState === states.Fight) {
+
+        parallax.Draw(); //draw background
+        fighter.draw();
 
 
     }
