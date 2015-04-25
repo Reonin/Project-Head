@@ -6,7 +6,11 @@
       frame: $.noop,
       update: $.noop,
       width: null,
-      height: null
+      height: null,
+      rotate: $.noop,
+      translate: $.noop,
+      save: $.noop,
+      restore: $.noop
     };
   }
   
@@ -37,7 +41,28 @@
         canvas.fillColor(pattern);
         canvas.fillRect(x, y, width, height);
       },
-      
+
+      rotate:function(angle){
+        canvas.rotate(
+          angle
+        );
+
+      },
+
+      translate: function(x, y){
+        canvas.translate(
+          x,
+          y
+        );
+
+      },
+      save:function(){
+         canvas.save();
+      },
+
+      restore:function(){
+         canvas.restore();
+      },
       width: width,
       height: height
     };

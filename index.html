@@ -393,14 +393,26 @@ function Enemy(I) {
 
 //The Fighter
 var rightPunch = false;
-
 var swungPunch = false;
+
+
+
+var rightKick = false;
+var swungKick = false;
 
 function punchTimer(){
 
 swungPunch = false;
 fighter.px =  fighter.px - 30;
   console.log("hit punch Timer once");
+
+}
+
+function kickTimer(){
+
+swungKick = false;
+//fighter.px =  fighter.px - 30;
+  console.log("hit kick Timer once");
 
 }
         
@@ -429,25 +441,41 @@ var fighter = {
         //canvas.fillStyle = this.color;
         // canvas.fillRect(this.x, this.y, this.width, this.height);
         this.sprite.draw(canvas, this.x, this.y);
-
+       // console.log(this.sprite.draw);
         if(rightPunch == true){
             this.rightArm.draw(canvas, this.x + 70, this.y);
-            
-            
-
-            console.log("punch dynamics");
+/*            console.log("punch dynamics");
             console.log(this.x + 70);
-            console.log(this.px + 90);
-
-              //fighter.px =  fighter.px - 30;
+            console.log(this.px + 90);*/
         }else{
             this.rightArm.draw(canvas, this.x + 50, this.y);
 
         }
-        
+
 
         this.leftArm.draw(canvas, this.x - 50, this.y);
-        this.rightLeg.draw(canvas, this.x + 50, this.y + 100);
+        
+
+
+      if(rightKick == true){
+            console.log(this.rightLeg);
+           this.rightLeg.draw(canvas, this.x + 50, this.y + 100);
+/*            console.log("punch dynamics");*/
+        }else{
+
+             this.rightLeg.save(); 
+
+            this.rightLeg.translate(this.x + 50, this.y + 100);
+            this.rightLeg.rotate(0.785); //45 degree angle
+            this.rightLeg.draw(canvas, 0 , 0);
+
+            this.rightLeg.restore();
+
+           
+
+        }
+
+
         this.leftLeg.draw(canvas, this.x - 50, this.y + 100);
     },
     punch: function() {
@@ -1073,6 +1101,18 @@ function update() { //Updates location and reaction of objects to the canvas
         }
         if(keydown.space == false){
             rightPunch = false;
+        }
+
+        if(keydown.z == true && swungPunch == false){
+            swungKick = true;
+            rightKick = true;
+            //fighter.px =  fighter.px + 30;
+            console.log("kicked once");
+            window.setTimeout("kickTimer()", 200);
+            handleFightCollisions();
+        }
+        if(keydown.z == false){
+            rightKick = false;
         }
     
         
