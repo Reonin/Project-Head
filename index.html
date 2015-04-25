@@ -399,6 +399,7 @@ var swungPunch = false;
 function punchTimer(){
 
 swungPunch = false;
+fighter.px =  fighter.px - 30;
   console.log("hit punch Timer once");
 
 }
@@ -411,8 +412,12 @@ var fighter = {
     leftArm: Sprite("greenTile"),
     rightLeg: Sprite("redTile"),
     leftLeg: Sprite("redTile"),
-    x: 220,
+    x: 565,
     y: 680,
+    px: 635,
+    py: 680,
+    pwidth: 64,
+    pheight: 160,
     width: 64,
     height: 160,
     life: 100,
@@ -427,9 +432,95 @@ var fighter = {
 
         if(rightPunch == true){
             this.rightArm.draw(canvas, this.x + 70, this.y);
+            
+            
+
+            console.log("punch dynamics");
+            console.log(this.x + 70);
+            console.log(this.px + 90);
+
+              //fighter.px =  fighter.px - 30;
         }else{
             this.rightArm.draw(canvas, this.x + 50, this.y);
+
         }
+        
+
+        this.leftArm.draw(canvas, this.x - 50, this.y);
+        this.rightLeg.draw(canvas, this.x + 50, this.y + 100);
+        this.leftLeg.draw(canvas, this.x - 50, this.y + 100);
+    },
+    punch: function() {
+       // var bulletPosition = this.midpoint();
+
+        shoot_sound.play();
+
+        
+    },
+    launch: function(){
+        var missilePostition = this.midpoint();
+        console.log(Missle.width);
+        playerMissiles.push(Missle({
+            speed: 2,
+            x: missilePostition.x - 500,
+            y: missilePostition.y
+        }))
+    },
+    midpoint: function() {
+        return {
+            x: this.x + this.width / 2,
+            y: this.y + this.height / 2
+        };
+    },
+    explode: function() {
+        this.active = false;
+        explosion_sound.play();
+        GameLoopMusic_sound.fadeOut(0, 2000);
+        currentState = states.End;
+        // An explosion sound and then end the game
+    },
+    lifeChange: function(change) {
+
+
+        this.life = this.life + change; //Adds or subtracts health based on the value added in the function
+
+        if (this.life <= 0) {
+            this.explode();
+        }
+
+        return this.life;
+
+
+    }
+};
+
+
+var punchingBag = {
+    // color: "#00A",
+    sprite: Sprite("bodyTile"),
+    rightArm: Sprite("greenTile"),
+    leftArm: Sprite("greenTile"),
+    rightLeg: Sprite("redTile"),
+    leftLeg: Sprite("redTile"),
+    x: 720,
+    y: 680,
+    width: 64,
+    height: 160,
+    life: 100,
+    velX: 0,
+    velY: 0,
+    speed: 4,
+    friction: 0.85,
+    draw: function() {
+        //canvas.fillStyle = this.color;
+        // canvas.fillRect(this.x, this.y, this.width, this.height);
+        this.sprite.draw(canvas, this.x, this.y);
+
+       /* if(rightPunch == true){
+            this.rightArm.draw(canvas, this.x + 70, this.y);
+        }else{*/
+            this.rightArm.draw(canvas, this.x + 50, this.y);
+        //}
         
 
         this.leftArm.draw(canvas, this.x - 50, this.y);
@@ -483,13 +574,19 @@ var fighter = {
 
 
 
-
 //Collision Detection
 function collides(a, b) {
     return a.x < b.x + b.width &&
         a.x + a.width > b.x &&
         a.y < b.y + b.height &&
         a.y + a.height > b.y;
+}
+
+function punchcollides(a, b) {
+    return a.px < b.x + b.width &&
+        a.px + a.pwidth > b.x &&
+        a.py < b.y + b.height &&
+        a.py + a.pheight > b.y;
 }
 
 
@@ -695,7 +792,22 @@ function handleCollisions() {
             player.lifeChange(-10);
         }
     });
+
+
 }
+
+function handleFightCollisions() {
+     if (punchcollides(fighter, punchingBag)) {
+
+                console.log("Collliiiiiiide");
+               
+            }
+
+  
+
+    
+}
+
 
 /*** Parrallax background tutorial http://javacoffee.de/?p=866 **/
 //Parallax background
@@ -831,8 +943,11 @@ function update() { //Updates location and reaction of objects to the canvas
 
         player.velX *= player.friction;
         player.x += player.velX;
+
         player.velY *= player.friction;
         player.y += player.velY;
+
+
 
         player.x = player.x.clamp(0, CANVAS_WIDTH - player.width); //prevents character from going past canvas
 
@@ -937,8 +1052,11 @@ function update() { //Updates location and reaction of objects to the canvas
 
         fighter.velX *= fighter.friction;
         fighter.x += fighter.velX;
+        fighter.px += fighter.velX;
         fighter.velY *= fighter.friction;
         fighter.y += fighter.velY;
+
+        fighter.py += fighter.velY;
 
         fighter.x = fighter.x.clamp(0, CANVAS_WIDTH - fighter.width); //prevents character from going past canvas
 
@@ -946,14 +1064,19 @@ function update() { //Updates location and reaction of objects to the canvas
         fighter.y = fighter.y.clamp(0, CANVAS_HEIGHT - fighter.height); //prevents character from going past canvas
 
         if(keydown.space == true && swungPunch == false){
-            rightPunch = true;
             swungPunch = true;
-            window.setTimeout("punchTimer()", 3000);
+            rightPunch = true;
+            fighter.px =  fighter.px + 30;
             console.log("punched once");
+            window.setTimeout("punchTimer()", 200);
+            handleFightCollisions();
         }
         if(keydown.space == false){
             rightPunch = false;
         }
+    
+        
+
     }
 
 }
@@ -1073,6 +1196,7 @@ function draw() { //Draws objects to the canvas
 
         parallax.Draw(); //draw background
         fighter.draw();
+        punchingBag.draw();
 
 
     }
