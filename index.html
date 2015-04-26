@@ -82,7 +82,7 @@ var states = {
     Fight:4,
     formation:5
 };
-var currentState = states.Game;
+var currentState = states.Fight;
 
 //Game Loop
 //var FPS = 60;
@@ -221,13 +221,13 @@ var switchKey;
 
 
 //Remove Before Testing
-/*playerArray[0] = player;
+playerArray[0] = player;
 playerArray[1] = player2;
 playerArray[2] = player3;
 
 playerArray[0].name = "Override";
 playerArray[1].name = "Override";
-playerArray[2].name = "Override";*/
+playerArray[2].name = "Override";
 /*playerArray[0].name = "Player 2";
 playerArray[1].name = "Player 3";
 playerArray[2].name = "Player 1";*/
@@ -263,7 +263,7 @@ function Enemy(I) {
     I.active = true;
     I.age = Math.floor(Math.random() * 128);
 
-    I.sprite = Sprite("enemy");
+    I.sprite = Sprite("enemyskull");
     // I.color = "#A2B";
 
     I.x = CANVAS_WIDTH / 4 + Math.random() * CANVAS_WIDTH / 2;
@@ -311,7 +311,6 @@ var rightPunch = false;
 var swungPunch = false;
 
 
-
 var rightKick = false;
 var swungKick = false;
 
@@ -335,6 +334,9 @@ var alreadyShot1 = true;
 var alreadyShot2 = true;
 var alreadyShot3 = true;
 
+
+//EnemyVar
+var leftPunch = true;
 
 function punchTimer(){
 
@@ -516,26 +518,36 @@ var punchingBag = {
     leftLeg: Sprite("redTile"),
     x: 1020,
     y: fighterGround,
+    px: 1020 - 70,
+    py: fighterGround ,
     width: 64,
     height: 160,
+    pwidth: 64,
+    pheight: 160,
     life: 100,
     velX: 0,
     velY: 0,
     speed: 4,
     friction: 0.85,
     draw: function() {
-        //canvas.fillStyle = this.color;
-        // canvas.fillRect(this.x, this.y, this.width, this.height);
+
         this.sprite.draw(canvas, this.x, this.y);
 
-       /* if(rightPunch == true){
-            this.rightArm.draw(canvas, this.x + 70, this.y);
-        }else{*/
-            this.rightArm.draw(canvas, this.x + 50, this.y);
-        //}
-        
 
-        this.leftArm.draw(canvas, this.x - 50, this.y);
+        
+         if(leftPunch == true){
+        
+            this.leftArm.draw(canvas, this.x - 70, this.y);
+            leftPunch = false;
+           setTimeout("punchingBagPunchAi()",5000);
+        }
+        else{
+
+             this.leftArm.draw(canvas, this.x , this.y);
+        }
+
+
+        //this.leftArm.draw(canvas, this.x - 50, this.y);
         this.rightLeg.draw(canvas, this.x + 50, this.y + 100);
         this.leftLeg.draw(canvas, this.x - 50, this.y + 100);
     },
@@ -587,7 +599,16 @@ var punchingBag = {
 
 var pbagFireballs = [];
 
+function punchingBagPunchAi(){
+        leftPunch = true;
 
+        punchingBag.px =  punchingBag.px - 70;
+        console.log("enemy punched");
+        punchingBag.punch();
+        handlePbagCollisions();
+        punchingBag.px =  punchingBag.px + 70;
+
+}
 function Fireball(I) {
     I.active = true;
 
@@ -696,7 +717,7 @@ function handleCollisions() {
 }
 
 function handleFightCollisions() {
-     if (punchcollides(fighter, punchingBag)) {
+     if (punchcollides(fighter, punchingBag) && armBlock == false) {
                 punchingBag.lifeChange(-5);
                 console.log("Collliiiiiiide");
                
@@ -719,8 +740,17 @@ function handlePbagCollisions(){
                 
 
             }
+           
       
     });
+
+// console.log("handlePbagCollisions is firing");
+             if (punchcollides(punchingBag, fighter) && armBlock == false) {
+                fighter.velX--;
+                fighter.lifeChange(-5);
+                console.log("Punched yo face homie");
+               
+            }
 
 }
 
@@ -1202,7 +1232,7 @@ if(switchPhrase == "Legs"){
         });
 
 
-        handlePbagCollisions();
+        
 
     }
 
