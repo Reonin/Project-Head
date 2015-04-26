@@ -82,7 +82,7 @@ var states = {
     Fight:4,
     formation:5
 };
-var currentState = states.Game;
+var currentState = states.Fight;
 
 //Game Loop
 //var FPS = 60;
@@ -299,14 +299,27 @@ var blockDone = false;
 
 var jumpDropNow = false;
 
+
+var switchDone = false;
+var switching = false;
+
+var switchPhrase = "Legs";
+
+var youCanJumpnow = true;
+var youCanpunchnow = true;
+
 function punchTimer(){
 
 swungPunch = false;
+youCanpunchnow = false;
 fighter.px =  fighter.px - 30;
-  console.log("hit punch Timer once");
-
+console.log("hit punch Timer once");
+setTimeout("dontPunch()",1000);
 }
 
+function dontPunch(){
+    youCanpunchnow = true;
+}
 function kickTimer(){
 
 swungKick = false;
@@ -326,9 +339,30 @@ var fighterStartX = 565;
 
 function jumpDropTimer(){
     jumpDropNow = false;
+    youCanJumpnow = false;
     fighter.y = fighterGround; 
     fighter.py = fighterGround - 30;
      console.log("drop Timer once");
+     setTimeout("dontJump()",1000);
+}
+function dontJump(){
+
+    youCanJumpnow = true;
+}
+function switchPowerTimer(){
+
+switchDone = false;
+
+if(switching == true){
+switchPhrase = "Arms";
+}
+else if(switching == false){
+switchPhrase = "Legs";
+}
+
+
+console.log("Switching Power to" + switchPhrase);
+
 }
         
 //Create The player
@@ -356,8 +390,10 @@ var fighter = {
         //canvas.fillStyle = this.color;
         // canvas.fillRect(this.x, this.y, this.width, this.height);
         this.sprite.draw(canvas, this.x, this.y);
+
+
        // console.log(this.sprite.draw);
-        if(rightPunch == true){
+        if(rightPunch == true && youCanpunchnow == true){
             this.rightArm.draw(canvas, this.x + 70, this.y);
             this.leftArm.draw(canvas, this.x - 50, this.y);
 /*            console.log("punch dynamics");
@@ -450,7 +486,7 @@ var punchingBag = {
     leftArm: Sprite("greenTile"),
     rightLeg: Sprite("redTile"),
     leftLeg: Sprite("redTile"),
-    x: 720,
+    x: 1020,
     y: fighterGround,
     width: 64,
     height: 160,
@@ -482,13 +518,14 @@ var punchingBag = {
 
         
     },
-    launch: function(){
-        var missilePostition = this.midpoint();
-        console.log(Missle.width);
-        playerMissiles.push(Missle({
-            speed: 2,
-            x: missilePostition.x - 500,
-            y: missilePostition.y
+    shoot: function() {
+        var bulletPosition = this.midpoint();
+        shoot_sound.play();
+
+        pbagFireballs.push(Fireball({
+            speed: 3,
+            x: bulletPosition.x,
+            y: bulletPosition.y
         }))
     },
     midpoint: function() {
@@ -502,6 +539,7 @@ var punchingBag = {
         explosion_sound.play();
         GameLoopMusic_sound.fadeOut(0, 2000);
         currentState = states.End;
+        console.log("YOU WON YOU DEFEATED THE PUNCHINGBAG");
         // An explosion sound and then end the game
     },
     lifeChange: function(change) {
@@ -519,7 +557,41 @@ var punchingBag = {
     }
 };
 
+var pbagFireballs = [];
 
+
+function Fireball(I) {
+    I.active = true;
+
+    I.xVelocity = -I.speed;
+    I.yVelocity = 0;
+    I.width = 32;
+    I.height = 32;
+
+    I.color = "#F00";
+    I.sprite = Sprite("fireball");
+
+    I.inBounds = function() {
+        return I.x >= 0 && I.x <= CANVAS_WIDTH &&
+            I.y >= 0 && I.y <= CANVAS_HEIGHT;
+    };
+
+    I.draw = function() {
+        /*canvas.fillStyle = this.color;
+        canvas.fillRect(this.x, this.y, this.width, this.height);*/
+
+        this.sprite.draw(canvas, this.x, this.y);
+    };
+
+    I.update = function() {
+        I.x += I.xVelocity;
+        I.y += I.yVelocity;
+
+        I.active = I.active && I.inBounds();
+    };
+
+    return I;
+}
 
 
 //Collision Detection
@@ -602,9 +674,26 @@ function handleFightCollisions() {
                
             }
 
-  
 
     
+}
+
+
+function handlePbagCollisions(){
+
+ pbagFireballs.forEach(function(bullet) {
+        
+            if (collides(bullet, fighter)) {
+                //enemy.explode();
+                fighter.lifeChange(-10);
+                 bullet.active = false;
+                console.log("hitting the player");
+                
+
+            }
+      
+    });
+
 }
 
 function checkWinConditions(){
@@ -896,7 +985,10 @@ function update() { //Updates location and reaction of objects to the canvas
             }
         }
 
-        if (keydown.up && jumpDropNow == false) {
+if(switchPhrase == "Legs"){
+            
+       
+        if (keydown.up && jumpDropNow == false && youCanJumpnow == true) {
              
             if (fighter.velY > -fighter.speed) {
                 if(fighter.y >= 800){
@@ -919,6 +1011,8 @@ function update() { //Updates location and reaction of objects to the canvas
            
         }
 
+
+ }
         if (keydown.down) {
             if (fighter.velY < fighter.speed) {
                 //fighter.velY++;
@@ -939,7 +1033,10 @@ function update() { //Updates location and reaction of objects to the canvas
     
         fighter.y = fighter.y.clamp(0, CANVAS_HEIGHT - fighter.height); //prevents character from going past canvas
 
-        if(keydown.space == true && swungPunch == false){
+
+    if(switchPhrase == "Legs"){ /** Switch back to Arms before final testing***/
+
+        if(keydown.space == true && swungPunch == false && youCanpunchnow == true){
             swungPunch = true;
             rightPunch = true;
             fighter.px =  fighter.px + 30;
@@ -952,7 +1049,7 @@ function update() { //Updates location and reaction of objects to the canvas
             rightPunch = false;
         }
 
-        if(keydown.z == true && swungKick == false){
+        /*if(keydown.z == true && swungKick == false){
             swungKick = true;
             rightKick = true;
             //fighter.px =  fighter.px + 30;
@@ -962,12 +1059,10 @@ function update() { //Updates location and reaction of objects to the canvas
         }
         if(keydown.z == false){
             rightKick = false;
-        }
+        }*/
     
         
         //Block
-
-
          if(keydown.x == true &&  blockDone == false){
 
             blockDone = true;
@@ -982,10 +1077,35 @@ function update() { //Updates location and reaction of objects to the canvas
             armBlock = false;
         }
     
+}
+
+        if(keydown.b == true &&  switchDone == false){
+
+            switchDone = true;
+            switching = !switching;
+
+        
+            console.log("switch once");
+            window.setTimeout("switchPowerTimer()", 800);
+            //handleFightCollisions();
+        }
+       
+    
+
+        pbagFireballs.forEach(function(bullet) {
+            bullet.update();
+        });
+
+        pbagFireballs = pbagFireballs.filter(function(bullet) {
+            return bullet.active;
+        });
 
 
+        handlePbagCollisions();
 
     }
+
+
 
 }
 
@@ -1183,6 +1303,14 @@ function draw() { //Draws objects to the canvas
         fighter.draw();
         punchingBag.draw();
 
+        pbagFireballs.forEach(function(bullet) {
+            bullet.draw();
+        });
+
+        canvas.fillStyle = "#fff"; // Set color to black
+        canvas.font = 'bold 35pt Calibri';
+        canvas.fillText(/*playerArray[0].name*/ player.name + ":"+ "'Power to the " +switchPhrase +"!'",  fighter.x - 100 , 800);
+        
 
         //Life Bar top is pink static background *FIGHTER HEALTH BAR*
         canvas.strokeRect(20, 20, 100 * 2, 10);
