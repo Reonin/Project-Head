@@ -406,9 +406,9 @@ function Bullet(I) {
 
     I.xVelocity = 0;
     I.yVelocity = -I.speed;
-    I.width = 3;
-    I.height = 3;
-    I.color = "#000";
+    I.width = 4;
+    I.height = 5;
+    I.color = "#FF69B4";
 
     I.inBounds = function() {
         return I.x >= 0 && I.x <= CANVAS_WIDTH &&
