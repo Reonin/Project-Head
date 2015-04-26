@@ -80,7 +80,8 @@ var states = {
     Game: 2,
     End: 3,
     Fight:4,
-    formation:5
+    formation:5,
+    Won:6
 };
 var currentState = states.title;
 
@@ -240,7 +241,7 @@ playerArray[2].name = "Player 1";*/
 //Sound creation
 var GameLoopMusic_sound = new Howl({
     urls: ['sounds/spaceShooterMusic.mp3'],
-    autoplay: false,
+    autoplay: true,
     loop: true,
 });
 
@@ -619,7 +620,7 @@ var punchingBag = {
         this.active = false;
         explosion_sound.play();
         GameLoopMusic_sound.fadeOut(0, 2000);
-        currentState = states.End;
+        currentState = states.Won;
         console.log("YOU WON YOU DEFEATED THE PUNCHINGBAG");
         // An explosion sound and then end the game
     },
@@ -784,8 +785,8 @@ function handlePbagCollisions(){
 
 function checkWinConditions(){
     
-
-    if(player.pointScore >= 500 || player2.pointScore >= 500 || player3.pointScore >= 500 ){
+var testScore = 500;
+    if(player.pointScore >= testScore || player2.pointScore >= testScore || player3.pointScore >= testScore ){
 
 
 
@@ -815,6 +816,7 @@ function checkWinConditions(){
             playerArray[2] = player2;
         }
 
+
        if(player3.pointScore >= player.pointScore && player3.pointScore >= player2.pointScore){
             player3.order = 1;
             playerArray[0] = player3;
@@ -828,7 +830,18 @@ function checkWinConditions(){
             playerArray[2] = player3;
         }
 
+        if(playerArray[0].order == playerArray[1].order || playerArray[1].order == playerArray[2].order){
 
+           console.log("BUG Where two players are equal");
+            playerArray[0] = player;
+            playerArray[0].order = 1;
+
+            playerArray[1] = player2;
+            playerArray[1].order = 2;
+
+            playerArray[2] = player3;
+            playerArray[2].order = 3;
+        }
       
 
         console.log(player.order);
@@ -1063,7 +1076,7 @@ function update() { //Updates location and reaction of objects to the canvas
     }
 
 
-    if (currentState === states.End) {
+    if (currentState === states.End || currentState === states.Won ) {
 
 
         endTextY = endTextY + 1;
@@ -1297,7 +1310,7 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#000"; // Set color to black
         canvas.font = '25pt Calibri';
-        var SPLASH_SCREEN_TEXT = "Ronin Rampant Games";
+        var SPLASH_SCREEN_TEXT = "Rampant Ronin Games";
         splashTextX = canvas.measureText(SPLASH_SCREEN_TEXT).width;
         canvas.fillText(SPLASH_SCREEN_TEXT, (CANVAS_WIDTH / 2) - (splashTextX / 2), splashTextY);
 
@@ -1427,7 +1440,7 @@ function draw() { //Draws objects to the canvas
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
         
-        canvas.fillText(playerArray[0].name + ":"+ "And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2), formTopTextY - 250);
+        canvas.fillText(playerArray[0].name + ":"+ " And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2)- 100, formTopTextY - 250);
 
 
 
@@ -1435,14 +1448,14 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
-        canvas.fillText(playerArray[1].name + ":"+ "I'll Form Legs!",  formLeftTextX , 1060);
+        canvas.fillText(playerArray[1].name + ":"+ " I'll Form Legs!",  formLeftTextX -50 , 1060);
         
        
         canvas.drawImage(playerArray[2].pilotImg, formRightTextX, 400, 175, 400 + 267);
 
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
-        canvas.fillText(playerArray[2].name + ":"+"I'll Form arms!!",  formRightTextX , 1060);
+        canvas.fillText(playerArray[2].name + ":"+" I'll Form Arms!!",  formRightTextX , 1060);
 
     }
 
@@ -1469,6 +1482,29 @@ function draw() { //Draws objects to the canvas
 
     }
 
+
+    if (currentState === states.Won) {
+
+
+        canvas.fillStyle = "#F00"; // Set color to red
+        canvas.font = 'bold 45pt Calibri';
+
+        var GameOVER_TEXT = "Congrats! You teens with attitude have defeated the Evil HotHead...For now!";
+        endTextX = canvas.measureText(GameOVER_TEXT).width; //Centers the text based on length
+        //canvas.fillText(GameOVER_TEXT, (CANVAS_WIDTH/2) - (GameOVER_TEXTx/2) , CANVAS_HEIGHT-CANVAS_HEIGHT/4);
+
+        canvas.fillText(GameOVER_TEXT, (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY - 90);
+
+
+        canvas.fillStyle = "#000"; // Set color to black
+        canvas.font = '20pt Calibri';
+        endTextX = canvas.measureText("Corey Jeffers").width;
+        canvas.fillText("Corey Jeffers", (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY - 45);
+
+
+   
+
+    }
 
     if (currentState === states.Fight) {
 
