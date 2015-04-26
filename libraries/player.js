@@ -7,6 +7,8 @@ grayPilot.src = 'images/pixelPilotgray.png';
 var bluePilot = new Image();
 bluePilot.src = 'images/pixelPilotblue.png';
 
+var titleScreen = new Image();
+titleScreen.src = 'images/TitleScreen.png';
 
 
 //Create The player
