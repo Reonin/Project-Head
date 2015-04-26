@@ -31,7 +31,7 @@
         width: 100%;
         height: 100%;
         margin: 0;
-        background-color: #45b3e7;
+        background-color: #000;
     }
 	#GameCanvasScreen{
 	padding-left: 0;
@@ -82,7 +82,7 @@ var states = {
     Fight:4,
     formation:5
 };
-var currentState = states.Fight;
+var currentState = states.Game;
 
 //Game Loop
 //var FPS = 60;
@@ -221,13 +221,13 @@ var switchKey;
 
 
 //Remove Before Testing
-playerArray[0] = player;
+/*playerArray[0] = player;
 playerArray[1] = player2;
 playerArray[2] = player3;
 
 playerArray[0].name = "Override";
 playerArray[1].name = "Override";
-playerArray[2].name = "Override";
+playerArray[2].name = "Override";*/
 /*playerArray[0].name = "Player 2";
 playerArray[1].name = "Player 3";
 playerArray[2].name = "Player 1";*/
@@ -329,6 +329,12 @@ var switchPhrase = "Legs";
 
 var youCanJumpnow = true;
 var youCanpunchnow = true;
+
+
+var alreadyShot1 = true;
+var alreadyShot2 = true;
+var alreadyShot3 = true;
+
 
 function punchTimer(){
 
@@ -886,14 +892,20 @@ function update() { //Updates location and reaction of objects to the canvas
         player2.movement();
         player3.movement();
         //Player actions
-        if (keydown.space) {
+        if (keydown.space && alreadyShot1 == true) {
+            alreadyShot1 = false;
             player.shoot();
+            
         }
-        if (keydown.z) {
+        if (keydown.z && alreadyShot2 == true) {
+            alreadyShot2 = false;
             player2.shoot();
+            
         }
-        if (keydown.m) {
+        if (keydown.m && alreadyShot3 == true) {
+            alreadyShot3 = false;
             player3.shoot();
+            
         }
         
         playerBullets.forEach(function(bullet) {
@@ -947,6 +959,16 @@ function update() { //Updates location and reaction of objects to the canvas
         if (formTopTextY >= 300) {
 
             formTopTextY = 300;
+
+            if(formTopTextY == 300){
+
+                if(keydown.z || keydown.space || keydown.m){
+                    currentState = states.Fight;
+                }
+                
+
+
+            }
         }
 
         }
@@ -1113,7 +1135,7 @@ if(switchPhrase == "Legs"){
         fighter.y = fighter.y.clamp(0, CANVAS_HEIGHT - fighter.height); //prevents character from going past canvas
 
 
-    if(switchPhrase == "Legs"){ /** Switch back to Arms before final testing***/
+    if(switchPhrase == "Arms"){ /** Switch back to Arms before final testing***/
 
         if(punchKey == true && swungPunch == false && youCanpunchnow == true){
             swungPunch = true;
@@ -1258,7 +1280,7 @@ function draw() { //Draws objects to the canvas
         //Player 1
 
         canvas.fillStyle = "#fff"; // Set color to black
-        canvas.font = '20pt Calibri';
+        canvas.font = 'bold 20pt Calibri';
         canvas.fillText("Player 1", 20, 25);
 
         canvas.fillStyle = "#fff"; // Set color to black
@@ -1280,7 +1302,7 @@ function draw() { //Draws objects to the canvas
         //Player 2
 
         canvas.fillStyle = "#00f"; // Set color to black
-        canvas.font = '20pt Calibri';
+        canvas.font = 'bold 20pt Calibri';
         canvas.fillText("Player 2", hudBar2Slide, 25);
 
         canvas.fillStyle = "#fff"; // Set color to black
@@ -1301,7 +1323,7 @@ function draw() { //Draws objects to the canvas
 
         //Player 3
         canvas.fillStyle = "#F00"; // Set color to black
-        canvas.font = '20pt Calibri';
+        canvas.font = 'bold 20pt Calibri';
         canvas.fillText("Player 3", hudBar3Slide, 25);
 
         canvas.fillStyle = "#fff"; // Set color to black
@@ -1363,15 +1385,11 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#000"; // Set color to black
         canvas.font = '20pt Calibri';
-        endTextX = canvas.measureText("First Firstnameson").width;
-        canvas.fillText("First Firstnameson", (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY - 45);
+        endTextX = canvas.measureText("Corey Jeffers").width;
+        canvas.fillText("Corey Jeffers", (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY - 45);
 
 
-        canvas.fillStyle = "#000"; // Set color to black
-        canvas.font = '20pt Calibri';
-        canvas.fillText("Second Secondton", (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY);
-
-
+   
 
     }
 

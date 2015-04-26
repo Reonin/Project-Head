@@ -35,12 +35,16 @@ var player = {
         var bulletPosition = this.midpoint();
         shoot_sound.play();
 
+
         playerBullets.push(Bullet({
             speed: 5,
             x: bulletPosition.x,
             y: bulletPosition.y,
             bulletID: "player1"
         }))
+
+        setTimeout("reload1()", 500);
+
     },
     movement: function(){
 
@@ -169,6 +173,8 @@ var player2 = {
             y: bulletPosition.y,
             bulletID: "player2"
         }))
+
+        setTimeout("reload2()", 500);
     },
     movement: function(){
         
@@ -297,6 +303,8 @@ var player3 = {
             y: bulletPosition.y,
             bulletID: "player3"
         }))
+
+        setTimeout("reload3()", 500);
     },
     movement: function(){
         
@@ -454,3 +462,15 @@ function Missle(I) {
 
     return I;
 }
+
+function reload1(){
+    alreadyShot1 = true;
+};
+function reload2(){
+    alreadyShot2 = true;
+};
+
+function reload3(){
+    alreadyShot3 = true;
+};
+
