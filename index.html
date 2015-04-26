@@ -212,6 +212,28 @@ var rightName;
 var leftName;
 var playerArray = new Array();
 
+var punchKey;
+var blockKey;
+var jumpKey;
+var moveKeyRight;
+var moveKeyLeft;
+var switchKey;
+
+
+//Remove Before Testing
+playerArray[0] = player;
+playerArray[1] = player2;
+playerArray[2] = player3;
+
+playerArray[0].name = "Override";
+playerArray[1].name = "Override";
+playerArray[2].name = "Override";
+/*playerArray[0].name = "Player 2";
+playerArray[1].name = "Player 3";
+playerArray[2].name = "Player 1";*/
+
+
+
 
 
 
@@ -972,14 +994,71 @@ function update() { //Updates location and reaction of objects to the canvas
 
       if (currentState === states.Fight) {
 
+        //Head controls
+            if(playerArray[0].name == "Player 1"){
+                moveKeyRight = keydown.right;
+                moveKeyLeft = keydown.left;
+                switchKey = keydown.space;
+               // console.log(keydown.right);
+
+            }else if(playerArray[0].name == "Player 2"){
+                moveKeyRight = keydown.d;
+                moveKeyLeft = keydown.a;
+                switchKey = keydown.z;
+            }else if(playerArray[0].name == "Player 3"){
+                moveKeyRight = keydown.l;
+                moveKeyLeft = keydown.j;
+                switchKey = keydown.m;
+            }else{
+                 switchKey = keydown.b;
+                moveKeyRight = keydown.right;
+                moveKeyLeft = keydown.left;
+            }
+
+            //Arms Controls
+            if(playerArray[1].name == "Player 1"){
+                punchKey = keydown.right;
+                blockKey = keydown.left;
+
+            }else if(playerArray[1].name == "Player 2"){
+                punchKey = keydown.d;
+                blockKey = keydown.a;
+
+            }else if(playerArray[1].name == "Player 3"){
+                punchKey = keydown.l;
+                blockKey = keydown.j;
+
+            }else{
+                punchKey = keydown.space;
+                blockKey = keydown.x;
+            }
+
+            //Legs Control
+            if(playerArray[2].name == "Player 1"){
+                jumpKey = keydown.up;
+               
+            }else if(playerArray[2].name == "Player 2"){
+                jumpKey = keydown.w;
+                
+            }else if(playerArray[2].name == "Player 3"){
+                jumpKey = keydown.i;
+               
+            }else{
+                
+                jumpKey = keydown.up;
+                
+            }
+
+
+
         //Player Movement Controls
-        if (keydown.left) {
+        if (moveKeyLeft) {
            if (fighter.velX > -fighter.speed) {
                 fighter.velX--;
             }
         }
 
-        if (keydown.right) {
+        if (moveKeyRight) {
            if (fighter.velX < fighter.speed) {
                 fighter.velX++;
             }
@@ -988,7 +1067,7 @@ function update() { //Updates location and reaction of objects to the canvas
 if(switchPhrase == "Legs"){
             
        
-        if (keydown.up && jumpDropNow == false && youCanJumpnow == true) {
+        if (jumpKey && jumpDropNow == false && youCanJumpnow == true) {
              
             if (fighter.velY > -fighter.speed) {
                 if(fighter.y >= 800){
@@ -1036,7 +1115,7 @@ if(switchPhrase == "Legs"){
 
     if(switchPhrase == "Legs"){ /** Switch back to Arms before final testing***/
 
-        if(keydown.space == true && swungPunch == false && youCanpunchnow == true){
+        if(punchKey == true && swungPunch == false && youCanpunchnow == true){
             swungPunch = true;
             rightPunch = true;
             fighter.px =  fighter.px + 30;
@@ -1045,7 +1124,7 @@ if(switchPhrase == "Legs"){
             window.setTimeout("punchTimer()", 200);
             handleFightCollisions();
         }
-        if(keydown.space == false){
+        if(punchKey == false){
             rightPunch = false;
         }
 
@@ -1063,7 +1142,7 @@ if(switchPhrase == "Legs"){
     
         
         //Block
-         if(keydown.x == true &&  blockDone == false){
+         if(blockKey == true &&  blockDone == false){
 
             blockDone = true;
             armBlock = true;
@@ -1073,13 +1152,13 @@ if(switchPhrase == "Legs"){
             window.setTimeout("blockTimer()", 800);
             handleFightCollisions();
         }
-        if(keydown.x == false){
+        if(blockKey == false){
             armBlock = false;
         }
     
 }
 
-        if(keydown.b == true &&  switchDone == false){
+        if(switchKey == true &&  switchDone == false){
 
             switchDone = true;
             switching = !switching;
