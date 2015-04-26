@@ -398,11 +398,11 @@ console.log("Switching Power to" + switchPhrase);
 //Create The player
 var fighter = {
     // color: "#00A",
-    sprite: Sprite("bodyTile"),
-    rightArm: Sprite("greenTile"),
-    leftArm: Sprite("greenTile"),
-    rightLeg: Sprite("redTile"),
-    leftLeg: Sprite("redTile"),
+    sprite: Sprite("bodyTile2"),
+    rightArm: Sprite("greenTile2"),
+    leftArm: Sprite("greenTile2"),
+    rightLeg: Sprite("emptyTile"),
+    leftLeg: Sprite("emptyTile"),
     x: fighterStartX,
     y: fighterGround,
     px: fighterStartX + 70,
@@ -511,11 +511,11 @@ var fighter = {
 
 var punchingBag = {
     // color: "#00A",
-    sprite: Sprite("bodyTile"),
+    sprite: Sprite("flametornado"),
     rightArm: Sprite("greenTile"),
-    leftArm: Sprite("greenTile"),
-    rightLeg: Sprite("redTile"),
-    leftLeg: Sprite("redTile"),
+    leftArm: Sprite("flameskull"),
+    rightLeg: Sprite("emptyTile"),
+    leftLeg: Sprite("emptyTile"),
     x: 1020,
     y: fighterGround,
     px: 1020 - 70,
@@ -529,6 +529,7 @@ var punchingBag = {
     velY: 0,
     speed: 4,
     friction: 0.85,
+    scriptStep:1,
     draw: function() {
 
         this.sprite.draw(canvas, this.x, this.y);
@@ -536,10 +537,26 @@ var punchingBag = {
 
         
          if(leftPunch == true){
-        
+            
+            if(this.scriptStep == 1 || this.scriptStep == 2 || this.scriptStep == 3){
+
             this.leftArm.draw(canvas, this.x - 70, this.y);
             leftPunch = false;
            setTimeout("punchingBagPunchAi()",5000);
+
+                    this.scriptStep = this.scriptStep + 1;
+
+            }
+
+            else if(this.scriptStep == 4){
+
+                console.log("Imma firing my fireballz");
+                setTimeout("punchingBag.shoot()", 1500);
+                this.scriptStep = 1;
+
+            }
+           
+
         }
         else{
 
@@ -730,20 +747,7 @@ function handleFightCollisions() {
 
 function handlePbagCollisions(){
 
- pbagFireballs.forEach(function(bullet) {
-        
-            if (collides(bullet, fighter)) {
-                //enemy.explode();
-                fighter.lifeChange(-10);
-                 bullet.active = false;
-                console.log("hitting the player");
-                
-
-            }
-           
-      
-    });
-
+ 
 // console.log("handlePbagCollisions is firing");
              if (punchcollides(punchingBag, fighter) && armBlock == false) {
                 fighter.velX--;
@@ -1231,6 +1235,19 @@ if(switchPhrase == "Legs"){
             return bullet.active;
         });
 
+        pbagFireballs.forEach(function(bullet) {
+        
+            if (collides(bullet, fighter)) {
+                //enemy.explode();
+                fighter.lifeChange(-15);
+                 bullet.active = false;
+                console.log("hitting the player");
+                
+
+            }
+           
+      
+    });
 
         
 
