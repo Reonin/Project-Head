@@ -82,7 +82,7 @@ var states = {
     Fight:4,
     formation:5
 };
-var currentState = states.Fight;
+var currentState = states.title;
 
 //Game Loop
 //var FPS = 60;
@@ -221,13 +221,13 @@ var switchKey;
 
 
 //Remove Before Testing
-playerArray[0] = player;
+/*playerArray[0] = player;
 playerArray[1] = player2;
 playerArray[2] = player3;
 
 playerArray[0].name = "Override";
 playerArray[1].name = "Override";
-playerArray[2].name = "Override";
+playerArray[2].name = "Override";*/
 /*playerArray[0].name = "Player 2";
 playerArray[1].name = "Player 3";
 playerArray[2].name = "Player 1";*/
@@ -239,16 +239,39 @@ playerArray[2].name = "Player 1";*/
 
 //Sound creation
 var GameLoopMusic_sound = new Howl({
-    urls: ['sounds/In-Orbit.mp3'],
+    urls: ['sounds/spaceShooterMusic.mp3'],
     autoplay: false,
     loop: true,
 });
+
+var transformMusic_sound = new Howl({
+    urls: ['sounds/transformMusic.mp3'],
+    autoplay: false,
+    loop: true,
+});
+
+var fightMusic_sound = new Howl({
+    urls: ['sounds/fightMusic.mp3'],
+    autoplay: false,
+    loop: true,
+});
+
+
 var explosion_sound = new Howl({
     urls: ['sounds/explosion.mp3', 'sounds/explosion.wav']
 });
 var shoot_sound = new Howl({
     urls: ['sounds/shoot.mp3', 'sounds/shoot.wav'],
     volume: 0.2
+});
+var punch_sound = new Howl({
+    urls: ['sounds/punch.mp3', 'sounds/punch.wav'],
+    volume: 0.2
+});
+
+var evilLaugh_sound = new Howl({
+    urls: ['sounds/evilLaugh.mp3', 'sounds/evilLaugh.wav'],
+    volume: 0.5
 });
 
 //explosion_sound.play();
@@ -466,7 +489,7 @@ var fighter = {
         this.leftLeg.draw(canvas, this.x - 50, this.y + 100);
     },
     punch: function() {
-        shoot_sound.play();  
+        punch_sound.play();  
     },
     block: function(){
 
@@ -550,6 +573,7 @@ var punchingBag = {
 
             else if(this.scriptStep == 4){
 
+                evilLaugh_sound.play();
                 console.log("Imma firing my fireballz");
                 setTimeout("punchingBag.shoot()", 1500);
                 this.scriptStep = 1;
@@ -571,13 +595,13 @@ var punchingBag = {
     punch: function() {
        // var bulletPosition = this.midpoint();
 
-        shoot_sound.play();
+        punch_sound.play();
 
         
     },
     shoot: function() {
         var bulletPosition = this.midpoint();
-        shoot_sound.play();
+       // shoot_sound.play();
 
         pbagFireballs.push(Fireball({
             speed: 3,
@@ -811,6 +835,9 @@ function checkWinConditions(){
         console.log(player2.order);
         console.log(player3.order);
         console.log("Someone won");
+
+        GameLoopMusic_sound.stop();
+        transformMusic_sound.play();
         currentState = states.formation;
 
     }
@@ -997,6 +1024,8 @@ function update() { //Updates location and reaction of objects to the canvas
             if(formTopTextY == 300){
 
                 if(keydown.z || keydown.space || keydown.m){
+                    transformMusic_sound.stop();
+                    fightMusic_sound.play();
                     currentState = states.Fight;
                 }
                 
@@ -1279,7 +1308,7 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#000"; // Set color to black
         canvas.font = 'bold 40pt Calibri';
-        var GAME_NAME_TEXT = "Project Head";
+        var GAME_NAME_TEXT = "And I'll Form the Head";
         gameTextx = canvas.measureText(GAME_NAME_TEXT).width; //Centers the text based on length
         canvas.fillText(GAME_NAME_TEXT, (CANVAS_WIDTH / 2) - (gameTextx / 2) - 3, CANVAS_HEIGHT / 3);
         //The next two create a special text effect
@@ -1395,7 +1424,7 @@ function draw() { //Draws objects to the canvas
         formTopTextX = canvas.measureText("And I'll Form The Head!!!").width;
 
         canvas.drawImage(playerArray[0].pilotImg, (CANVAS_WIDTH / 2) - (formTopTextX / 2), formTopTextY -267, 175, formTopTextY + 267);
-        canvas.fillStyle = "#000"; // Set color to black
+        canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
         
         canvas.fillText(playerArray[0].name + ":"+ "And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2), formTopTextY - 250);
@@ -1404,14 +1433,14 @@ function draw() { //Draws objects to the canvas
 
         canvas.drawImage(playerArray[1].pilotImg, formLeftTextX, 400, 175, 400 + 267);
 
-        canvas.fillStyle = "#000"; // Set color to black
+        canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
         canvas.fillText(playerArray[1].name + ":"+ "I'll Form Legs!",  formLeftTextX , 1060);
         
        
         canvas.drawImage(playerArray[2].pilotImg, formRightTextX, 400, 175, 400 + 267);
 
-        canvas.fillStyle = "#000"; // Set color to black
+        canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
         canvas.fillText(playerArray[2].name + ":"+"I'll Form arms!!",  formRightTextX , 1060);
 
@@ -1421,7 +1450,7 @@ function draw() { //Draws objects to the canvas
 
 
         canvas.fillStyle = "#F00"; // Set color to red
-        canvas.font = '25pt Calibri';
+        canvas.font = 'bold 45pt Calibri';
 
         var GameOVER_TEXT = "Game Over";
         endTextX = canvas.measureText(GameOVER_TEXT).width; //Centers the text based on length
@@ -1453,8 +1482,19 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = 'bold 35pt Calibri';
-        canvas.fillText(/*playerArray[0].name*/ player.name + ":"+ "'Power to the " +switchPhrase +"!'",  fighter.x - 100 , 800);
+        canvas.fillText(playerArray[0].name + ":"+ "'Power to the " +switchPhrase +"!'" ,  fighter.x - 100 , 770);
         
+        if(switchPhrase == 'Legs'){
+        canvas.fillStyle = "#fff"; // Set color to black
+        canvas.font = 'bold 35pt Calibri';
+        canvas.fillText(playerArray[2].name + ":"+ "'Jump jets Primed!'" ,  fighter.x - 100 , 800);
+        }
+
+        else if(switchPhrase == 'Arms'){
+        canvas.fillStyle = "#fff"; // Set color to black
+        canvas.font = 'bold 35pt Calibri';
+        canvas.fillText(playerArray[1].name + ":"+ " 'Fist ready captain!'" ,  fighter.x - 100 , 800);
+        }
 
         //Life Bar top is pink static background *FIGHTER HEALTH BAR*
         canvas.strokeRect(20, 20, 100 * 2, 10);
