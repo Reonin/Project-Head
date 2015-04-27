@@ -368,7 +368,7 @@ swungPunch = false;
 youCanpunchnow = false;
 fighter.px =  fighter.px - 30;
 console.log("hit punch Timer once");
-setTimeout("dontPunch()",1000);
+setTimeout("dontPunch()",500);
 }
 
 function dontPunch(){
@@ -830,7 +830,7 @@ var testScore = 500;
             playerArray[2] = player3;
         }
 
-        if(playerArray[0].order == playerArray[1].order || playerArray[1].order == playerArray[2].order){
+        if(playerArray[0] == undefined || playerArray[1]== undefined || playerArray[2] == undefined){
 
            console.log("BUG Where two players are equal");
             playerArray[0] = player;
@@ -1029,7 +1029,7 @@ function update() { //Updates location and reaction of objects to the canvas
 
         if(formRightTextX == CANVAS_WIDTH/2){
 
-        formTopTextY += 1;
+        formTopTextY += 2;
         if (formTopTextY >= 300) {
 
             formTopTextY = 300;
@@ -1053,7 +1053,7 @@ function update() { //Updates location and reaction of objects to the canvas
 
        
         if(formLeftTextX == CANVAS_WIDTH/3){
-            formRightTextX -= 1;
+            formRightTextX -= 2;
         if(formRightTextX <= CANVAS_WIDTH/2){
             formRightTextX = CANVAS_WIDTH/2;
         }
@@ -1061,7 +1061,7 @@ function update() { //Updates location and reaction of objects to the canvas
         
 
 
-        formLeftTextX += 1;
+        formLeftTextX += 2;
         if(formLeftTextX >= CANVAS_WIDTH/3){
             formLeftTextX = CANVAS_WIDTH/3;
         }
@@ -1451,7 +1451,7 @@ function draw() { //Draws objects to the canvas
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
         
-        canvas.fillText(playerArray[0].name + ":"+ " And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2)- 100, formTopTextY - 250);
+        canvas.fillText(playerArray[0].name + ":"+ " And I'll Form The Head!!! My movement is our movement and I will power you both", (CANVAS_WIDTH / 2) - (formTopTextX / 2)- 470, formTopTextY - 250);
 
 
 
@@ -1459,14 +1459,14 @@ function draw() { //Draws objects to the canvas
 
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
-        canvas.fillText(playerArray[1].name + ":"+ " I'll Form Legs!",  formLeftTextX -50 , 1060);
+        canvas.fillText(playerArray[1].name + ":"+ " I'll Form Legs! My up will be your Jump",  formLeftTextX -370 , 1060);
         
        
         canvas.drawImage(playerArray[2].pilotImg, formRightTextX, 400, 175, 400 + 267);
 
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '25pt Calibri';
-        canvas.fillText(playerArray[2].name + ":"+" I'll Form Arms!!",  formRightTextX , 1060);
+        canvas.fillText(playerArray[2].name + ":"+" I'll Form Arms!! My movement will be your punch and block",  formRightTextX , 1060);
 
     }
 

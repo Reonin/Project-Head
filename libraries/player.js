@@ -408,9 +408,9 @@ function Bullet(I) {
 
     I.xVelocity = 0;
     I.yVelocity = -I.speed;
-    I.width = 4;
-    I.height = 5;
-    I.color = "#FF69B4";
+    I.width = 5;
+    I.height = 7;
+    I.color = "#32cd32";
 
     I.inBounds = function() {
         return I.x >= 0 && I.x <= CANVAS_WIDTH &&
@@ -443,7 +443,7 @@ function Missle(I) {
     I.yVelocity = -I.speed;
     I.width = 1002;
     I.height = 32;
-    I.color = "#34DDDD";
+    I.color = "#32cd32";
 
     I.inBounds = function() {
         return I.x >= 0 && I.x <= CANVAS_WIDTH &&
