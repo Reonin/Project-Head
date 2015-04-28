@@ -28,6 +28,7 @@ var player = {
     name: "Player 1",
     friction: 0.85,
     pilotImg:grayPilot,
+    color:"#D3D3D3",
     draw: function() {
         //canvas.fillStyle = this.color;
         // canvas.fillRect(this.x, this.y, this.width, this.height);
@@ -160,6 +161,7 @@ var player2 = {
     name: "Player 2",
     friction: 0.85,
     pilotImg:bluePilot,
+    color:"#0000FF",
     draw: function() {
         //canvas.fillStyle = this.color;
         // canvas.fillRect(this.x, this.y, this.width, this.height);
@@ -290,6 +292,7 @@ var player3 = {
     name: "Player 3",
     friction: 0.85,
     pilotImg:redPilot,
+    color:"#FF0000",
     draw: function() {
         //canvas.fillStyle = this.color;
         // canvas.fillRect(this.x, this.y, this.width, this.height);

@@ -785,11 +785,28 @@ function handlePbagCollisions(){
 
 function checkWinConditions(){
     
-var testScore = 500;
+var testScore = 20;
     if(player.pointScore >= testScore || player2.pointScore >= testScore || player3.pointScore >= testScore ){
 
+playerArray = [];
+playerArray = [player, player2, player3];
+ var maxSpeed = {"P1":playerArray[0],"P2": playerArray[1], "P3":playerArray[2]}; //{car:300, bike:60, motorbike:200, airplane:1000,helicopter:400, rocket:8*60*60};
 
+sortable = [];
+for (var vehicle in maxSpeed){
+    sortable.push([vehicle, maxSpeed[vehicle].pointScore,maxSpeed[vehicle] ]);
+}
+    
+sortable.sort(function(a, b) {return a[1] - b[1]});
 
+sortable[2][2].order = 1;
+sortable[1][2].order = 2;
+sortable[0][2].order = 3;
+
+playerArray[0] = sortable[2][2];
+playerArray[1] = sortable[1][2];
+playerArray[2] = sortable[0][2];
+/*
 
         if(player.pointScore >= player2.pointScore && player.pointScore >= player3.pointScore){
             player.order = 1;
@@ -842,7 +859,7 @@ var testScore = 500;
             playerArray[2] = player3;
             playerArray[2].order = 3;
         }
-      
+      */
 
         console.log(player.order);
         console.log(player2.order);
@@ -1162,7 +1179,7 @@ function update() { //Updates location and reaction of objects to the canvas
             }
         }
 
-if(switchPhrase == "Legs"){
+//if(switchPhrase == "Legs"){
             
        
         if (jumpKey && jumpDropNow == false && youCanJumpnow == true) {
@@ -1189,7 +1206,7 @@ if(switchPhrase == "Legs"){
         }
 
 
- }
+ //}
         if (keydown.down) {
             if (fighter.velY < fighter.speed) {
                 //fighter.velY++;
@@ -1211,7 +1228,7 @@ if(switchPhrase == "Legs"){
         fighter.y = fighter.y.clamp(0, CANVAS_HEIGHT - fighter.height); //prevents character from going past canvas
 
 
-    if(switchPhrase == "Arms"){ /** Switch back to Arms before final testing***/
+   // if(switchPhrase == "Arms"){ /** Switch back to Arms before final testing***/
 
         if(punchKey == true && swungPunch == false && youCanpunchnow == true){
             swungPunch = true;
@@ -1254,7 +1271,7 @@ if(switchPhrase == "Legs"){
             armBlock = false;
         }
     
-}
+//}
 
         if(switchKey == true &&  switchDone == false){
 
@@ -1445,28 +1462,30 @@ function draw() { //Draws objects to the canvas
 
     if(currentState === states.formation){
 
-        formTopTextX = canvas.measureText("And I'll Form The Head!!!").width;
+        canvas.font = 'bolder 25pt sans-serif';
+        formTopTextX = canvas.measureText(playerArray[0].name + ": And I'll Form The Head!!!").width;
 
-        canvas.drawImage(playerArray[0].pilotImg, (CANVAS_WIDTH / 2) - (formTopTextX / 2), formTopTextY -267, 175, formTopTextY + 267);
-        canvas.fillStyle = "#fff"; // Set color to black
-        canvas.font = '25pt Calibri';
+        canvas.drawImage(playerArray[0].pilotImg, (CANVAS_WIDTH / 2) - (formTopTextX / 2) + 100, formTopTextY -267, 275, formTopTextY + 267);
+        canvas.fillStyle = playerArray[0].color; // Set color to players color of choice
+        canvas.strokeStyle = '#FFF';
+        canvas.lineWidth = 1;
         
-        canvas.fillText(playerArray[0].name + ":"+ " And I'll Form The Head!!! My movement is our movement and I will power you both", (CANVAS_WIDTH / 2) - (formTopTextX / 2)- 470, formTopTextY - 250);
-
-
-
-        canvas.drawImage(playerArray[1].pilotImg, formLeftTextX, 400, 175, 400 + 267);
-
-        canvas.fillStyle = "#fff"; // Set color to black
-        canvas.font = '25pt Calibri';
-        canvas.fillText(playerArray[1].name + ":"+ " I'll Form Legs! My up will be your Jump",  formLeftTextX -370 , 1060);
         
+        canvas.fillText(playerArray[0].name + ": And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2), formTopTextY - 250);
+        canvas.strokeText(playerArray[0].name + ": And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2) , formTopTextY - 250);
        
-        canvas.drawImage(playerArray[2].pilotImg, formRightTextX, 400, 175, 400 + 267);
+        canvas.drawImage(playerArray[1].pilotImg, formRightTextX, 400, 215, 400 + 267);
 
-        canvas.fillStyle = "#fff"; // Set color to black
-        canvas.font = '25pt Calibri';
-        canvas.fillText(playerArray[2].name + ":"+" I'll Form Arms!! My movement will be your punch and block",  formRightTextX , 1060);
+        canvas.fillStyle = playerArray[1].color; // Set color to black
+        canvas.fillText(playerArray[1].name + ":"+" I'll Form Arms!!",  formRightTextX , 1060);
+        canvas.strokeText(playerArray[1].name + ":"+" I'll Form Arms!!",  formRightTextX , 1060);
+
+
+        canvas.drawImage(playerArray[2].pilotImg, formLeftTextX, 400, 215, 400 + 267);
+
+        canvas.fillStyle = playerArray[2].color; // Set color to black
+        canvas.fillText(playerArray[2].name + ":"+ " I'll Form Legs!",  formLeftTextX -70 , 1060);
+         canvas.strokeText(playerArray[2].name + ":"+ " I'll Form Legs!",  formLeftTextX -70 , 1060);
 
     }
 
@@ -1527,21 +1546,22 @@ function draw() { //Draws objects to the canvas
             bullet.draw();
         });
 
-        canvas.fillStyle = "#fff"; // Set color to black
+        canvas.fillStyle = playerArray[0].color; // Set color to black
         canvas.font = 'bold 35pt Calibri';
-        canvas.fillText(playerArray[0].name + ":"+ "'Power to the " +switchPhrase +"!'" ,  fighter.x - 100 , 770);
+        canvas.fillText(playerArray[0].name +  " is the Head!!!" ,  5 , 150);
         
-        if(switchPhrase == 'Legs'){
-        canvas.fillStyle = "#fff"; // Set color to black
-        canvas.font = 'bold 35pt Calibri';
-        canvas.fillText(playerArray[2].name + ":"+ "'Jump jets Primed!'" ,  fighter.x - 100 , 800);
-        }
 
-        else if(switchPhrase == 'Arms'){
-        canvas.fillStyle = "#fff"; // Set color to black
+        canvas.fillStyle = playerArray[1].color; // Set color to black
         canvas.font = 'bold 35pt Calibri';
-        canvas.fillText(playerArray[1].name + ":"+ " 'Fist ready captain!'" ,  fighter.x - 100 , 800);
-        }
+        canvas.fillText(playerArray[1].name + "  is the arms!'" ,  5, 185);
+    
+        canvas.fillStyle = playerArray[2].color; // Set color to black
+        canvas.font = 'bold 35pt Calibri';
+        canvas.fillText(playerArray[2].name +  " is the legs!!" ,  5 , 215);
+        
+        
+        
+        
 
         //Life Bar top is pink static background *FIGHTER HEALTH BAR*
         canvas.strokeRect(20, 20, 100 * 2, 10);
