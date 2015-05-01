@@ -784,17 +784,6 @@ function handlePbagCollisions(){
 
 }
 
-
-function refreshMana(){
-
-
-    fighter.mana = fighter.mana + 2;
-    if (fighter.mana > 100) {
-
-        fighter.mana = 100;
-    };
-}
-
 function checkWinConditions(){
     
 var testScore = 20;
@@ -1068,7 +1057,6 @@ function update() { //Updates location and reaction of objects to the canvas
                 if(keydown.z || keydown.space || keydown.m){
                     transformMusic_sound.stop();
                     fightMusic_sound.play();
-                    setInterval("refreshMana()", 500);
                     currentState = states.Fight;
                 }
                 
@@ -1195,8 +1183,8 @@ function update() { //Updates location and reaction of objects to the canvas
 //if(switchPhrase == "Legs"){
             
        
-        if (jumpKey && jumpDropNow == false && youCanJumpnow == true && fighter.mana >= 10) {
-             fighter.mana = fighter.mana - 10;
+        if (jumpKey && jumpDropNow == false && youCanJumpnow == true) {
+             
             if (fighter.velY > -fighter.speed) {
                 if(fighter.y >= 800){
 
@@ -1243,8 +1231,7 @@ function update() { //Updates location and reaction of objects to the canvas
 
    // if(switchPhrase == "Arms"){ /** Switch back to Arms before final testing***/
 
-        if(punchKey == true && swungPunch == false && youCanpunchnow == true  && fighter.mana >= 10){
-            fighter.mana = fighter.mana - 10;
+        if(punchKey == true && swungPunch == false && youCanpunchnow == true){
             swungPunch = true;
             rightPunch = true;
             fighter.px =  fighter.px + 30;
@@ -1602,14 +1589,14 @@ function draw() { //Draws objects to the canvas
 
 
         //Mana Bar top is pink static background *FIGHTER HEALTH BAR*
-        canvas.strokeRect(20, 60, 100 * 2, 10);
+        canvas.strokeRect(60, 20, 100 * 2, 10);
         canvas.fillStyle = "#8B8989";
-        canvas.fillRect(20, 60, 100 * 2, 10);
+        canvas.fillRect(60, 20, 100 * 2, 10);
 
         //Second bar is Blue dynamic one
-        canvas.strokeRect(20, 60, 100 * 2, 10);
+        canvas.strokeRect(60, 20, 100 * 2, 10);
         canvas.fillStyle = "#00F";
-        canvas.fillRect(20, 60, fighter.mana * 2, 10);
+        canvas.fillRect(60, 20, fighter.mana * 2, 10);
 
 
       
