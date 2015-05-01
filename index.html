@@ -440,6 +440,7 @@ var fighter = {
     velY: 0,
     speed: 4,
     friction: 0.85,
+    mana:100,
     draw: function() {
         //canvas.fillStyle = this.color;
         // canvas.fillRect(this.x, this.y, this.width, this.height);
@@ -1583,6 +1584,22 @@ function draw() { //Draws objects to the canvas
         canvas.strokeRect(CANVAS_WIDTH - 400, 20, 100 * 2, 20);
         canvas.fillStyle = "#F00";
         canvas.fillRect(CANVAS_WIDTH - 400, 20, punchingBag.life * 2, 20);
+
+
+
+
+        //Mana Bar top is pink static background *FIGHTER HEALTH BAR*
+        canvas.strokeRect(60, 20, 100 * 2, 10);
+        canvas.fillStyle = "#8B8989";
+        canvas.fillRect(60, 20, 100 * 2, 10);
+
+        //Second bar is Blue dynamic one
+        canvas.strokeRect(60, 20, 100 * 2, 10);
+        canvas.fillStyle = "#00F";
+        canvas.fillRect(60, 20, fighter.mana * 2, 10);
+
+
+      
 
 
     }
