@@ -276,7 +276,7 @@ var evilLaugh_sound = new Howl({
     urls: ['sounds/evilLaugh.mp3', 'sounds/evilLaugh.wav'],
     volume: 0.5
 });
-
+Howler.mute();
 //explosion_sound.play();
 
 
@@ -498,6 +498,16 @@ var fighter = {
     block: function(){
 
     },
+    shoot: function() {
+        var bulletPosition = this.midpoint();
+       // shoot_sound.play();
+
+        fighterlasers.push(Eyelazer({
+            speed: 3,
+            x: bulletPosition.x,
+            y: bulletPosition.y
+        }))
+    },
     launch: function(){
         var missilePostition = this.midpoint();
         console.log(Missle.width);
@@ -643,7 +653,7 @@ var punchingBag = {
 };
 
 var pbagFireballs = [];
-
+var fighterlasers = [];
 function punchingBagPunchAi(){
         leftPunch = true;
 
@@ -687,6 +697,39 @@ function Fireball(I) {
     return I;
 }
 
+
+function Eyelazer(I) {
+    I.active = true;
+
+    I.xVelocity = I.speed;
+    I.yVelocity = 0;
+    I.width = 32;
+    I.height = 4;
+
+    I.color = "#F00";
+    //I.sprite = Sprite("fireball");
+
+    I.inBounds = function() {
+        return I.x >= 0 && I.x <= CANVAS_WIDTH &&
+            I.y >= 0 && I.y <= CANVAS_HEIGHT;
+    };
+
+    I.draw = function() {
+        canvas.fillStyle = this.color;
+        canvas.fillRect(this.x, this.y-60, this.width, this.height);
+
+       // this.sprite.draw(canvas, this.x, this.y);
+    };
+
+    I.update = function() {
+        I.x += I.xVelocity;
+        I.y += I.yVelocity;
+
+        I.active = I.active && I.inBounds();
+    };
+
+    return I;
+}
 
 //Collision Detection
 function collides(a, b) {
@@ -820,60 +863,7 @@ sortable[0][2].order = 3;
 playerArray[0] = sortable[2][2];
 playerArray[1] = sortable[1][2];
 playerArray[2] = sortable[0][2];
-/*
 
-        if(player.pointScore >= player2.pointScore && player.pointScore >= player3.pointScore){
-            player.order = 1;
-            playerArray[0] = player;
-        }else if(player.pointScore >= player2.pointScore || player.pointScore >= player3.pointScore){
-            player.order = 2;
-            playerArray[1] = player;
-        }
-        else {
-            player.order = 3;
-            playerArray[2] = player;
-        }
-
-
-        if(player2.pointScore >= player.pointScore && player2.pointScore >= player3.pointScore){
-            player2.order = 1;
-            playerArray[0] = player2;
-        }else if(player2.pointScore >= player.pointScore || player2.pointScore >= player3.pointScore){
-            player2.order = 2;
-            playerArray[1] = player2;
-        }
-        else {
-            player2.order = 3;
-            playerArray[2] = player2;
-        }
-
-
-       if(player3.pointScore >= player.pointScore && player3.pointScore >= player2.pointScore){
-            player3.order = 1;
-            playerArray[0] = player3;
-        }else if(player3.pointScore >= player.pointScore || player3.pointScore >= player2.pointScore){
-            player3.order = 2;
-            playerArray[2] = playerArray[1];
-            playerArray[1] = player3;
-        }
-        else {
-            player3.order = 3;
-            playerArray[2] = player3;
-        }
-
-        if(playerArray[0] == undefined || playerArray[1]== undefined || playerArray[2] == undefined){
-
-           console.log("BUG Where two players are equal");
-            playerArray[0] = player;
-            playerArray[0].order = 1;
-
-            playerArray[1] = player2;
-            playerArray[1].order = 2;
-
-            playerArray[2] = player3;
-            playerArray[2].order = 3;
-        }
-      */
 
         console.log(player.order);
         console.log(player2.order);
@@ -1126,23 +1116,19 @@ function update() { //Updates location and reaction of objects to the canvas
 
         //Head controls
             if(playerArray[0].name == "Player 1"){
-                moveKeyRight = keydown.right;
-                moveKeyLeft = keydown.left;
+              
                 switchKey = keydown.space;
                // console.log(keydown.right);
 
             }else if(playerArray[0].name == "Player 2"){
-                moveKeyRight = keydown.d;
-                moveKeyLeft = keydown.a;
+                
                 switchKey = keydown.z;
             }else if(playerArray[0].name == "Player 3"){
-                moveKeyRight = keydown.l;
-                moveKeyLeft = keydown.j;
+               
                 switchKey = keydown.m;
             }else{
                  switchKey = keydown.b;
-                moveKeyRight = keydown.right;
-                moveKeyLeft = keydown.left;
+               
             }
 
             //Arms Controls
@@ -1165,16 +1151,23 @@ function update() { //Updates location and reaction of objects to the canvas
 
             //Legs Control
             if(playerArray[2].name == "Player 1"){
+                moveKeyRight = keydown.right;
+                moveKeyLeft = keydown.left;
                 jumpKey = keydown.up;
                
             }else if(playerArray[2].name == "Player 2"){
+                moveKeyRight = keydown.d;
+                moveKeyLeft = keydown.a;
                 jumpKey = keydown.w;
                 
             }else if(playerArray[2].name == "Player 3"){
+                 moveKeyRight = keydown.l;
+                moveKeyLeft = keydown.j;
                 jumpKey = keydown.i;
                
             }else{
-                
+                 moveKeyRight = keydown.right;
+                moveKeyLeft = keydown.left;
                 jumpKey = keydown.up;
                 
             }
@@ -1289,18 +1282,53 @@ function update() { //Updates location and reaction of objects to the canvas
     
 //}
 
-        if(switchKey == true &&  switchDone == false){
-
+        if(switchKey == true &&  switchDone == false && fighter.mana >= 15){
+            fighter.mana = fighter.mana - 15;
             switchDone = true;
             switching = !switching;
-
+            fighter.shoot();
         
             console.log("switch once");
-            window.setTimeout("switchPowerTimer()", 800);
+            window.setTimeout("switchPowerTimer()", 1000);
             //handleFightCollisions();
         }
        
     
+
+
+        /****Fighter eye lasers ****/
+
+
+fighterlasers.forEach(function(bullet) {
+            bullet.update();
+        });
+
+        fighterlasers = fighterlasers.filter(function(bullet) {
+            return bullet.active;
+        });
+
+        fighterlasers.forEach(function(bullet) {
+        
+            if (collides(bullet, punchingBag)) {
+                //enemy.explode();
+                punchingBag.lifeChange(-5); 
+                 bullet.active = false;
+                console.log("shooting the lasers");
+                
+
+            }
+           
+      
+    });
+
+
+
+        /***Eye lazersd end here ***/
+
+
+
+
+
 
         pbagFireballs.forEach(function(bullet) {
             bullet.update();
@@ -1559,6 +1587,11 @@ function draw() { //Draws objects to the canvas
         punchingBag.draw();
 
         pbagFireballs.forEach(function(bullet) {
+            bullet.draw();
+        });
+
+
+        fighterlasers.forEach(function(bullet) {
             bullet.draw();
         });
 
