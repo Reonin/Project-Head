@@ -26,6 +26,7 @@ var player = {
     pointScore:0,
     order:1,
     name: "Player 1",
+    aka: "player1",
     friction: 0.85,
     pilotImg:grayPilot,
     color:"#D3D3D3",
@@ -159,6 +160,7 @@ var player2 = {
     pointScore:0,
     order:2,
     name: "Player 2",
+    aka: "player2",
     friction: 0.85,
     pilotImg:bluePilot,
     color:"#0000FF",
@@ -290,6 +292,7 @@ var player3 = {
     pointScore:0,
     order:3,
     name: "Player 3",
+    aka: "player3",
     friction: 0.85,
     pilotImg:redPilot,
     color:"#FF0000",
@@ -413,7 +416,7 @@ function Bullet(I) {
     I.yVelocity = -I.speed;
     I.width = 5;
     I.height = 7;
-    I.color = "#32cd32";
+    I.color = I.bulletID == player.aka ? player.color: I.bulletID == player2.aka ? player2.color : player3.color ;
 
     I.inBounds = function() {
         return I.x >= 0 && I.x <= CANVAS_WIDTH &&
