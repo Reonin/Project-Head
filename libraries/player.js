@@ -117,7 +117,7 @@ var player = {
     },
     lifeChange: function(change) {
 
-
+            
         this.life = this.life + change; //Adds or subtracts health based on the value added in the function
 
         if (this.life <= 0) {
@@ -140,7 +140,10 @@ var player = {
         return this.pointScore;
 
 
-    }
+    },
+
+    isHit: false,
+    quip: ""
 };
 
 
@@ -272,7 +275,8 @@ var player2 = {
         return this.pointScore;
 
 
-    }
+    },isHit: false,
+    quip: ""
 };
 
 
@@ -404,7 +408,8 @@ var player3 = {
         return this.pointScore;
 
 
-    }
+    },isHit: false,
+    quip: ""
 };
 
 var playerBullets = [];

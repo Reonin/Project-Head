@@ -212,6 +212,8 @@ var topName;
 var rightName;
 var leftName;
 var playerArray = new Array();
+playerArray = [];
+playerArray = [player, player2, player3];
 
 var punchKey;
 var blockKey;
@@ -274,7 +276,7 @@ var punch_sound = new Howl({
 
 var evilLaugh_sound = new Howl({
     urls: ['sounds/evilLaugh.mp3', 'sounds/evilLaugh.wav'],
-    volume: 0.5
+    volume: 0.9
 });
 Howler.mute();
 //explosion_sound.play();
@@ -421,7 +423,7 @@ console.log("Switching Power to" + switchPhrase);
 
 }
         
-//Create The player
+//Create The Fighter
 var fighter = {
     // color: "#00A",
     sprite: Sprite("bodyTile2"),
@@ -500,7 +502,7 @@ var fighter = {
     },
     shoot: function() {
         var bulletPosition = this.midpoint();
-       // shoot_sound.play();
+       shoot_sound.play();
 
         fighterlasers.push(Eyelazer({
             speed: 3,
@@ -785,6 +787,9 @@ function handleCollisions() {
         if (collides(enemy, player)) {
             enemy.explode();
             player.lifeChange(-10);
+            player.isHit = true;
+            player.quip = QuipGenerator(player);
+        console.log(QuipGenerator(player));
         }
     });
 
@@ -792,6 +797,8 @@ function handleCollisions() {
         if (collides(enemy, player2)) {
             enemy.explode();
             player2.lifeChange(-10);
+             player2.isHit = true;
+            player2.quip = QuipGenerator(player2);
         }
     });
 
@@ -799,6 +806,8 @@ function handleCollisions() {
         if (collides(enemy, player3)) {
             enemy.explode();
             player3.lifeChange(-10);
+             player3.isHit = true;
+            player3.quip = QuipGenerator(player3);
         }
     });
 
@@ -842,11 +851,9 @@ function refreshMana(){
 
 function checkWinConditions(){
     
-var testScore = 20;
+var testScore = 300;
     if(player.pointScore >= testScore || player2.pointScore >= testScore || player3.pointScore >= testScore ){
 
-playerArray = [];
-playerArray = [player, player2, player3];
  var maxSpeed = {"P1":playerArray[0],"P2": playerArray[1], "P3":playerArray[2]}; //{car:300, bike:60, motorbike:200, airplane:1000,helicopter:400, rocket:8*60*60};
 
 sortable = [];
@@ -936,6 +943,25 @@ function ParallaxScrolling(canvas, imgdata) {
 
 var layer = new Array('images/space-wall.jpg', 'images/planet.png');
 var parallax = new ParallaxScrolling(canvas, layer);
+
+
+function QuipGenerator(player){
+
+    //Pass the player object in 
+
+    //pick a random quote to say
+    var quoteArray = ["Dang, I've been hit", "I'm gonna need some help over here", "Do a barrel roll"];
+    var quote = quoteArray[Math.floor(Math.random()*quoteArray.length)];
+    //Combine the players name plus the quote
+    //apply the players X,Y to the quote
+
+       // console.log(player.name + quote );
+    //return the quote to the player
+    return player.name + " " + quote ;
+}
+
+
+
 
 function controller(){
      //Pause the game
@@ -1350,7 +1376,7 @@ fighterlasers.forEach(function(bullet) {
             }
            
       
-    });
+          });
 
         
 
@@ -1500,6 +1526,32 @@ function draw() { //Draws objects to the canvas
         canvas.strokeRect(hudBar3Slide, 40, 100 * 2, 10);
         canvas.fillStyle = "#F00";
         canvas.fillRect(hudBar3Slide, 40, player3.life * 2, 10);
+
+
+       
+
+        for(i = 0; i< playerArray.length; i++){
+
+                if(playerArray[i].isHit == true){
+                   // debugger;
+
+                window.setTimeout(function(){ if(playerArray[i].isHit != undefined && playerArray[i].isHit == true){
+                    playerArray[i].isHit = false; 
+                }
+            }, 3000);
+
+                canvas.strokeStyle = '#FFF';
+                canvas.lineWidth = 1;
+                canvas.fillText(playerArray[i].quip,playerArray[i].x, playerArray[i].y);
+
+
+
+                }
+        
+        }       
+      
+        
+
 
     }
 
