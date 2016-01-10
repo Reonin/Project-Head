@@ -69,7 +69,7 @@ var player = {
                 player.velY--;
             }
 
-           
+
         }
 
         if (keydown.down) {
@@ -89,7 +89,7 @@ var player = {
 
         player.x = player.x.clamp(0, CANVAS_WIDTH - player.width); //prevents character from going past canvas
 
-    
+
         player.y = player.y.clamp(0, CANVAS_HEIGHT - player.height); //prevents character from going past canvas
 
     },
@@ -117,11 +117,14 @@ var player = {
     },
     lifeChange: function(change) {
 
-            
+
         this.life = this.life + change; //Adds or subtracts health based on the value added in the function
 
         if (this.life <= 0) {
             this.explode();
+        }
+        if(this.life > 100){
+            this.life = 100;
         }
 
         return this.life;
@@ -141,6 +144,7 @@ var player = {
 
 
     },
+
 
     isHit: false,
     quip: ""
@@ -186,7 +190,7 @@ var player2 = {
         setTimeout("reload2()", 500);
     },
     movement: function(){
-        
+
         if (keydown.a) {
            if (player2.velX > -player2.speed) {
                 player2.velX--;
@@ -204,7 +208,7 @@ var player2 = {
                 player2.velY--;
             }
 
-           
+
         }
 
         if (keydown.s) {
@@ -224,7 +228,7 @@ var player2 = {
 
         player2.x = player2.x.clamp(0, CANVAS_WIDTH - player2.width); //prevents character from going past canvas
 
-    
+
         player2.y = player2.y.clamp(0, CANVAS_HEIGHT - player2.height); //prevents character from going past canvas
 
     },
@@ -258,7 +262,9 @@ var player2 = {
         if (this.life <= 0) {
             this.explode();
         }
-
+        if(this.life > 100){
+            this.life = 100;
+        }
         return this.life;
 
 
@@ -319,7 +325,7 @@ var player3 = {
         setTimeout("reload3()", 500);
     },
     movement: function(){
-        
+
         if (keydown.j) {
            if (player3.velX > -player3.speed) {
                 player3.velX--;
@@ -337,7 +343,7 @@ var player3 = {
                 player3.velY--;
             }
 
-           
+
         }
 
         if (keydown.k) {
@@ -357,7 +363,7 @@ var player3 = {
 
         player3.x = player3.x.clamp(0, CANVAS_WIDTH - player3.width); //prevents character from going past canvas
 
-    
+
         player3.y = player3.y.clamp(0, CANVAS_HEIGHT - player3.height); //prevents character from going past canvas
 
     },
@@ -391,7 +397,9 @@ var player3 = {
         if (this.life <= 0) {
             this.explode();
         }
-
+        if(this.life > 100){
+            this.life = 100;
+        }
         return this.life;
 
 
@@ -486,4 +494,3 @@ function reload2(){
 function reload3(){
     alreadyShot3 = true;
 };
-

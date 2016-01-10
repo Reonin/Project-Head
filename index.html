@@ -13,9 +13,11 @@
 	<script src="libraries/howler.min.js" type="text/javascript"></script> <!-- Audio, http://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library -->
 	<script src="libraries/jquery.hotkeys.js" type="text/javascript"></script> <!-- Keyboard mapping, https://github.com/tzuryby/jquery.hotkeys -->
 	<script src="libraries/sprite.js" type="text/javascript"></script> <!-- Sprite Mapping,  -->
-    <script src="libraries/player.js" type="text/javascript"></script>
-    <script src="libraries/map.js" type="text/javascript"></script> <!-- Object and Level Mapping,  -->
-    <script src="libraries/tile.js" type="text/javascript"></script> <!-- Tile Mapping,  -->
+  <script src="libraries/player.js" type="text/javascript"></script>
+	<script src="libraries/enemy.js" type="text/javascript"></script><!--enemy controls -->
+	<script src="libraries/powerups.js" type="text/javascript"></script><!--powerup config -->
+  <script src="libraries/map.js" type="text/javascript"></script> <!-- Object and Level Mapping,  -->
+  <script src="libraries/tile.js" type="text/javascript"></script> <!-- Tile Mapping,  -->
 
 
 </head>
@@ -41,7 +43,7 @@
     display: block;
 
 	}
- 
+
 
 	</style>
 <script>
@@ -71,7 +73,7 @@ $(window).on('resize', function() {
 });
 //Draw tile map
 drawMap(canvas);
-// Game State 
+// Game State
 
 
 var states = {
@@ -133,7 +135,7 @@ function gameloop() {
     if (paused == false) {
     update();
     draw();
-   
+
         //;
     }
 window.requestAnimFrame(gameloop);
@@ -169,17 +171,17 @@ function setUpKeys() {
 };
 setUpKeys();
 
-var notyet = 0;    
+var notyet = 0;
 function clearTimer() {
-    notyet = 0;   
-}  
+    notyet = 0;
+}
 
 
 function pauseGame() {
     if (notyet == 1) {
         console.log("waiting")
-        return; 
-    }  
+        return;
+    }
      notyet = 1;
      paused = !paused;
      setTimeout('clearTimer()', 500);
@@ -269,6 +271,10 @@ var shoot_sound = new Howl({
     urls: ['sounds/shoot.mp3', 'sounds/shoot.wav'],
     volume: 0.2
 });
+var pickup_sound = new Howl({
+    urls: ['sounds/pickupzing.mp3', 'sounds/pickupzing.wav'],
+    volume: 0.2
+});
 var punch_sound = new Howl({
     urls: ['sounds/punch.mp3', 'sounds/punch.wav'],
     volume: 0.2
@@ -284,55 +290,7 @@ Howler.mute();
 
 
 var enemies = [];
-
-function Enemy(I) {
-    I = I || {};
-
-    I.active = true;
-    I.age = Math.floor(Math.random() * 128);
-
-    I.sprite = Sprite("enemyskull");
-    // I.color = "#A2B";
-
-    I.x = CANVAS_WIDTH / 4 + Math.random() * CANVAS_WIDTH / 2;
-    I.y = 0;
-    I.xVelocity = 0
-    I.yVelocity = 2;
-
-    I.width = 32;
-    I.height = 32;
-
-    I.inBounds = function() {
-        return I.x >= 0 && I.x <= CANVAS_WIDTH &&
-            I.y >= 0 && I.y <= CANVAS_HEIGHT;
-    };
-
-    I.draw = function() {
-        //canvas.fillStyle = this.color;
-        //canvas.fillRect(this.x, this.y, this.width, this.height);
-        this.sprite.draw(canvas, this.x, this.y);
-    };
-
-    I.explode = function() {
-        this.active = false;
-        explosion_sound.play();
-        // Extra Credit: Add an explosion graphic
-    };
-
-    I.update = function() {
-        I.x += I.xVelocity;
-        I.y += I.yVelocity;
-
-        I.xVelocity = 3 * Math.sin(I.age * Math.PI / 64);
-
-        I.age++;
-
-        I.active = I.active && I.inBounds();
-    };
-
-    return I;
-};
-
+var powerups = [];
 
 //The Fighter
 var rightPunch = false;
@@ -398,7 +356,7 @@ var fighterStartX = 565;
 function jumpDropTimer(){
     jumpDropNow = false;
     youCanJumpnow = false;
-    fighter.y = fighterGround; 
+    fighter.y = fighterGround;
     fighter.py = fighterGround - 30;
      console.log("drop Timer once");
      setTimeout("dontJump()",1000);
@@ -422,7 +380,7 @@ switchPhrase = "Legs";
 console.log("Switching Power to" + switchPhrase);
 
 }
-        
+
 //Create The Fighter
 var fighter = {
     // color: "#00A",
@@ -469,8 +427,8 @@ var fighter = {
         }
 
 
-       
-        
+
+
 
 
       if(rightKick == true){
@@ -479,7 +437,7 @@ var fighter = {
 /*            console.log("punch dynamics");*/
         }else{
 
-             this.rightLeg.save(); 
+             this.rightLeg.save();
 
             this.rightLeg.translate(this.x + 50, this.y + 100);
             this.rightLeg.rotate(0.785); //45 degree angle
@@ -487,7 +445,7 @@ var fighter = {
 
             this.rightLeg.restore();
 
-           
+
 
         }
 
@@ -495,7 +453,7 @@ var fighter = {
         this.leftLeg.draw(canvas, this.x - 50, this.y + 100);
     },
     punch: function() {
-        punch_sound.play();  
+        punch_sound.play();
     },
     block: function(){
 
@@ -574,9 +532,9 @@ var punchingBag = {
         this.sprite.draw(canvas, this.x, this.y);
 
 
-        
+
          if(leftPunch == true){
-            
+
             if(this.scriptStep == 1 || this.scriptStep == 2 || this.scriptStep == 3){
 
             this.leftArm.draw(canvas, this.x - 70, this.y);
@@ -595,7 +553,7 @@ var punchingBag = {
                 this.scriptStep = 1;
 
             }
-           
+
 
         }
         else{
@@ -613,7 +571,7 @@ var punchingBag = {
 
         punch_sound.play();
 
-        
+
     },
     shoot: function() {
         var bulletPosition = this.midpoint();
@@ -767,7 +725,7 @@ function handleCollisions() {
                                     player3.score(10);
                                     break;
                 }
-                
+
 
             }
         });
@@ -811,29 +769,51 @@ function handleCollisions() {
         }
     });
 
+		//PowerUp Collision
+		powerups.forEach(function(powerup) {
+				if (collides(powerup, player)) {
+						powerup.explode();
+						  player.lifeChange(30);
+				}
+		});
+		powerups.forEach(function(powerup) {
+				if (collides(powerup, player2)) {
+						powerup.explode();
+						  player2.lifeChange(30);
+				}
+		});
+		powerups.forEach(function(powerup) {
+				if (collides(powerup, player3)) {
+						powerup.explode();
+						player3.lifeChange(30);
+				}
+		});
+
+
+
 }
 
 function handleFightCollisions() {
      if (punchcollides(fighter, punchingBag) && armBlock == false) {
                 punchingBag.lifeChange(-5);
                 console.log("Collliiiiiiide");
-               
+
             }
 
 
-    
+
 }
 
 
 function handlePbagCollisions(){
 
- 
+
 // console.log("handlePbagCollisions is firing");
              if (punchcollides(punchingBag, fighter) && armBlock == false) {
                 fighter.velX--;
                 fighter.lifeChange(-5);
                 console.log("Punched yo face homie");
-               
+
             }
 
 }
@@ -850,7 +830,7 @@ function refreshMana(){
 }
 
 function checkWinConditions(){
-    
+
 var testScore = 300;
     if(player.pointScore >= testScore || player2.pointScore >= testScore || player3.pointScore >= testScore ){
 
@@ -860,7 +840,7 @@ sortable = [];
 for (var vehicle in maxSpeed){
     sortable.push([vehicle, maxSpeed[vehicle].pointScore,maxSpeed[vehicle] ]);
 }
-    
+
 sortable.sort(function(a, b) {return a[1] - b[1]});
 
 sortable[2][2].order = 1;
@@ -888,7 +868,7 @@ playerArray[2] = sortable[0][2];
 /*** Parrallax background tutorial http://javacoffee.de/?p=866 **/
 //Parallax background
 
-/** 
+/**
  * Data structure to hold layer data
  * @param s <string> Absolute path to the image
  * @param x <int> X coordinate
@@ -947,7 +927,7 @@ var parallax = new ParallaxScrolling(canvas, layer);
 
 function QuipGenerator(player){
 
-    //Pass the player object in 
+    //Pass the player object in
 
     //pick a random quote to say
     var quoteArray = ["Dang, I've been hit", "I'm gonna need some help over here", "Do a barrel roll"];
@@ -1016,19 +996,19 @@ function update() { //Updates location and reaction of objects to the canvas
         if (keydown.space && alreadyShot1 == true) {
             alreadyShot1 = false;
             player.shoot();
-            
+
         }
         if (keydown.z && alreadyShot2 == true) {
             alreadyShot2 = false;
             player2.shoot();
-            
+
         }
         if (keydown.m && alreadyShot3 == true) {
             alreadyShot3 = false;
             player3.shoot();
-            
+
         }
-        
+
         playerBullets.forEach(function(bullet) {
             bullet.update();
         });
@@ -1050,6 +1030,19 @@ function update() { //Updates location and reaction of objects to the canvas
             return missle.active;
         });
 
+
+				//Powerup Update logic
+				powerups.forEach(function(powerup){
+					powerup.update();
+				});
+
+				powerups = powerups.filter(function(powerup) {
+						return powerup.active;
+				});
+
+				if (Math.random() < 0.001) {
+						powerups.push(Powerup());
+				}
 
         //Enemy Update logic
         enemies.forEach(function(enemy) {
@@ -1089,24 +1082,24 @@ function update() { //Updates location and reaction of objects to the canvas
                     setInterval("refreshMana()", 500);
                     currentState = states.Fight;
                 }
-                
+
 
 
             }
         }
 
         }
-        
+
         //Action to skip to next screen
 
-       
+
         if(formLeftTextX == CANVAS_WIDTH/3){
             formRightTextX -= 2;
         if(formRightTextX <= CANVAS_WIDTH/2){
             formRightTextX = CANVAS_WIDTH/2;
         }
         }
-        
+
 
 
         formLeftTextX += 2;
@@ -1142,19 +1135,19 @@ function update() { //Updates location and reaction of objects to the canvas
 
         //Head controls
             if(playerArray[0].name == "Player 1"){
-              
+
                 switchKey = keydown.space;
                // console.log(keydown.right);
 
             }else if(playerArray[0].name == "Player 2"){
-                
+
                 switchKey = keydown.z;
             }else if(playerArray[0].name == "Player 3"){
-               
+
                 switchKey = keydown.m;
             }else{
                  switchKey = keydown.b;
-               
+
             }
 
             //Arms Controls
@@ -1180,22 +1173,22 @@ function update() { //Updates location and reaction of objects to the canvas
                 moveKeyRight = keydown.right;
                 moveKeyLeft = keydown.left;
                 jumpKey = keydown.up;
-               
+
             }else if(playerArray[2].name == "Player 2"){
                 moveKeyRight = keydown.d;
                 moveKeyLeft = keydown.a;
                 jumpKey = keydown.w;
-                
+
             }else if(playerArray[2].name == "Player 3"){
                  moveKeyRight = keydown.l;
                 moveKeyLeft = keydown.j;
                 jumpKey = keydown.i;
-               
+
             }else{
                  moveKeyRight = keydown.right;
                 moveKeyLeft = keydown.left;
                 jumpKey = keydown.up;
-                
+
             }
 
 
@@ -1214,8 +1207,8 @@ function update() { //Updates location and reaction of objects to the canvas
         }
 
 //if(switchPhrase == "Legs"){
-            
-       
+
+
         if (jumpKey && jumpDropNow == false && youCanJumpnow == true && fighter.mana >= 10) {
              fighter.mana = fighter.mana - 10;
             if (fighter.velY > -fighter.speed) {
@@ -1231,12 +1224,12 @@ function update() { //Updates location and reaction of objects to the canvas
                 console.log(fighter.velY--);
 
                 }
-               
+
 
 
             }
 
-           
+
         }
 
 
@@ -1258,7 +1251,7 @@ function update() { //Updates location and reaction of objects to the canvas
 
         fighter.x = fighter.x.clamp(0, CANVAS_WIDTH - fighter.width); //prevents character from going past canvas
 
-    
+
         fighter.y = fighter.y.clamp(0, CANVAS_HEIGHT - fighter.height); //prevents character from going past canvas
 
 
@@ -1289,15 +1282,15 @@ function update() { //Updates location and reaction of objects to the canvas
         if(keydown.z == false){
             rightKick = false;
         }*/
-    
-        
+
+
         //Block
          if(blockKey == true &&  blockDone == false){
 
             blockDone = true;
             armBlock = true;
 
-        
+
             console.log("block once");
             window.setTimeout("blockTimer()", 800);
             handleFightCollisions();
@@ -1305,7 +1298,7 @@ function update() { //Updates location and reaction of objects to the canvas
         if(blockKey == false){
             armBlock = false;
         }
-    
+
 //}
 
         if(switchKey == true &&  switchDone == false && fighter.mana >= 15){
@@ -1313,13 +1306,13 @@ function update() { //Updates location and reaction of objects to the canvas
             switchDone = true;
             switching = !switching;
             fighter.shoot();
-        
+
             console.log("switch once");
             window.setTimeout("switchPowerTimer()", 1000);
             //handleFightCollisions();
         }
-       
-    
+
+
 
 
         /****Fighter eye lasers ****/
@@ -1334,17 +1327,17 @@ fighterlasers.forEach(function(bullet) {
         });
 
         fighterlasers.forEach(function(bullet) {
-        
+
             if (collides(bullet, punchingBag)) {
                 //enemy.explode();
-                punchingBag.lifeChange(-5); 
+                punchingBag.lifeChange(-5);
                  bullet.active = false;
                 console.log("shooting the lasers");
-                
+
 
             }
-           
-      
+
+
     });
 
 
@@ -1365,20 +1358,20 @@ fighterlasers.forEach(function(bullet) {
         });
 
         pbagFireballs.forEach(function(bullet) {
-        
+
             if (collides(bullet, fighter)) {
                 //enemy.explode();
                 fighter.lifeChange(-15);
                  bullet.active = false;
                 console.log("hitting the player");
-                
+
 
             }
-           
-      
+
+
           });
 
-        
+
 
     }
 
@@ -1463,6 +1456,10 @@ function draw() { //Draws objects to the canvas
             enemy.draw();
         });
 
+				//PowerUp Draw
+				powerups.forEach(function(powerup) {
+						powerup.draw();
+				});
 
         //Player 1
 
@@ -1473,7 +1470,7 @@ function draw() { //Draws objects to the canvas
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '20pt Calibri';
         canvas.fillText("Score:" + player.pointScore , 115, 25);
-        
+
 
         //Life Bar top is pink static background
         canvas.strokeRect(20, 40, 100 * 2, 10);
@@ -1495,7 +1492,7 @@ function draw() { //Draws objects to the canvas
         canvas.fillStyle = "#fff"; // Set color to black
         canvas.font = '20pt Calibri';
         canvas.fillText("Score:" + player2.pointScore , hudBar2Slide + 115, 25);
-        
+
 
         //Life Bar top is pink static background
         canvas.strokeRect(hudBar2Slide, 40, 100 * 2, 10);
@@ -1528,15 +1525,16 @@ function draw() { //Draws objects to the canvas
         canvas.fillRect(hudBar3Slide, 40, player3.life * 2, 10);
 
 
-       
+
 
         for(i = 0; i< playerArray.length; i++){
 
                 if(playerArray[i].isHit == true){
-                   // debugger;
-
-                window.setTimeout(function(){ if(playerArray[i].isHit != undefined && playerArray[i].isHit == true){
-                    playerArray[i].isHit = false; 
+                // debugger;
+								var tempPlayerArrayHolder = playerArray[i];
+                window.setTimeout(function(){
+									 if(tempPlayerArrayHolder.isHit != undefined && tempPlayerArrayHolder.isHit == true){
+                    tempPlayerArrayHolder.isHit = false;
                 }
             }, 3000);
 
@@ -1547,10 +1545,10 @@ function draw() { //Draws objects to the canvas
 
 
                 }
-        
-        }       
-      
-        
+
+        }
+
+
 
 
     }
@@ -1565,11 +1563,11 @@ function draw() { //Draws objects to the canvas
         canvas.fillStyle = playerArray[0].color; // Set color to players color of choice
         canvas.strokeStyle = '#FFF';
         canvas.lineWidth = 1;
-        
-        
+
+
         canvas.fillText(playerArray[0].name + ": And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2), formTopTextY - 250);
         canvas.strokeText(playerArray[0].name + ": And I'll Form The Head!!!", (CANVAS_WIDTH / 2) - (formTopTextX / 2) , formTopTextY - 250);
-       
+
         canvas.drawImage(playerArray[1].pilotImg, formRightTextX, 400, 215, 400 + 267);
 
         canvas.fillStyle = playerArray[1].color; // Set color to black
@@ -1604,7 +1602,7 @@ function draw() { //Draws objects to the canvas
         canvas.fillText("Corey Jeffers", (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY - 45);
 
 
-   
+
 
     }
 
@@ -1628,7 +1626,7 @@ function draw() { //Draws objects to the canvas
         canvas.fillText("Corey Jeffers", (CANVAS_WIDTH / 2) - (endTextX / 2), endTextY - 45);
 
 
-   
+
 
     }
 
@@ -1650,19 +1648,19 @@ function draw() { //Draws objects to the canvas
         canvas.fillStyle = playerArray[0].color; // Set color to black
         canvas.font = 'bold 35pt Calibri';
         canvas.fillText(playerArray[0].name +  " is the Head!!!" ,  5 , 150);
-        
+
 
         canvas.fillStyle = playerArray[1].color; // Set color to black
         canvas.font = 'bold 35pt Calibri';
         canvas.fillText(playerArray[1].name + "  is the arms!'" ,  5, 185);
-    
+
         canvas.fillStyle = playerArray[2].color; // Set color to black
         canvas.font = 'bold 35pt Calibri';
         canvas.fillText(playerArray[2].name +  " is the legs!!" ,  5 , 215);
-        
-        
-        
-        
+
+
+
+
 
         //Life Bar top is pink static background *FIGHTER HEALTH BAR*
         canvas.strokeRect(20, 20, 100 * 2, 10);
@@ -1699,7 +1697,7 @@ function draw() { //Draws objects to the canvas
         canvas.fillRect(20, 60, fighter.mana * 2, 10);
 
 
-      
+
 
 
     }
